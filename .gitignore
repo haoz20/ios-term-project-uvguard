@@ -1,0 +1,50 @@
+# Xcode
+
+DerivedData/
+build/
+*.xcuserstate
+*.xcuserdatad
+*.moved-aside
+
+# Xcode user data (breakpoints, schemes, etc.)
+*.xcworkspace/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+
+# Swift Package Manager
+
+.build/
+# ✅ Keep this file committed for consistent dependencies
+# !Package.resolved
+
+# Playgrounds
+
+timeline.xctimeline
+playground.xcworkspace
+
+# CocoaPods (if used)
+
+Pods/
+# ✅ Keep this file committed for consistent dependencies
+# !Podfile.lock
+
+# Carthage (if used)
+
+Carthage/Build/
+# ✅ Keep this file committed for consistent dependencies
+!Cartfile.resolved
+
+
+# Fastlane (if used)
+
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+
+
+# General macOS
+
+.DS_Store
+*.swp
+*.swo
