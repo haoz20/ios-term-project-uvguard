@@ -22,7 +22,7 @@ build/
 timeline.xctimeline
 playground.xcworkspace
 
-# CocoaPods (if used)
+
 
 Pods/
 # ✅ Keep this file committed for consistent dependencies
