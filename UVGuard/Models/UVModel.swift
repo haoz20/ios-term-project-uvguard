@@ -6,3 +6,12 @@
 //
 
 import Foundation
+
+
+struct UVModel: Codable {
+    
+    var latitude: Double
+    var longiude: Double
+    
+    
+}

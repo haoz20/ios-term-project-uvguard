@@ -6,3 +6,8 @@
 //
 
 import Foundation
+
+@Observable
+class UVIndexViewModel {
+    
+}
