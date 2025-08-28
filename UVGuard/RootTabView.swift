@@ -10,7 +10,7 @@ import SwiftUI
 struct RootTabView: View {
     var body: some View {
         TabView {
-            Tab("UV", systemImage: "sun.max.fill") {
+            Tab("UV Index", systemImage: "sun.max.fill") {
                 
             }
             
