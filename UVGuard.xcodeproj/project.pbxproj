@@ -8,11 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		4405A5EC2E5DF3680039C2FF /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 4405A5EB2E5DF3680039C2FF /* Alamofire */; };
-		4405A6782E6038BE0039C2FF /* LocationDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4405A6772E6038BE0039C2FF /* LocationDataManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		4405A6772E6038BE0039C2FF /* LocationDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationDataManager.swift; sourceTree = "<group>"; };
 		44BD5DA22E5639CF002CA787 /* UVGuard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UVGuard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -39,7 +37,6 @@
 		44BD5D992E5639CF002CA787 = {
 			isa = PBXGroup;
 			children = (
-				4405A6772E6038BE0039C2FF /* LocationDataManager.swift */,
 				44BD5DA42E5639CF002CA787 /* UVGuard */,
 				44BD5DA32E5639CF002CA787 /* Products */,
 			);
@@ -131,7 +128,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4405A6782E6038BE0039C2FF /* LocationDataManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
