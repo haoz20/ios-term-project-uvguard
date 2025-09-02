@@ -17,7 +17,7 @@ struct UVIndexView: View {
                 Text("Current UV Index")
                     .font(.title)
                 
-                Text(String(format: "%.2f", uv))
+                Text(String(uv))
                     .font(.system(size: 80, weight: .bold))
                 
                 Text("Time: \(timeRange)")
