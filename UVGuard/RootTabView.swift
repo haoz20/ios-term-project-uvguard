@@ -11,23 +11,22 @@ struct RootTabView: View {
     var body: some View {
         TabView {
             Tab("UV Index", systemImage: "sun.max.fill") {
-                
+                UVIndexView()
             }
             
             Tab("Forecast", systemImage: "chart.xyaxis.line") {
-                
+                Text("Forecast Page")
             }
             
             Tab("Locations", systemImage: "map") {
-                
+                Text("Locations Page")
             }
             
             Tab("Settings", systemImage: "gearshape") {
-                Text("Setting Page")
+//                SettingsView()
             }
-            
         }
-        
+        .accentColor(.orange)
     }
 }
 
