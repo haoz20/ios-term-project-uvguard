@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject var locationDataManager = LocationDataManager()
+//    @StateObject var locationDataManager = LocationDataManager()
     var body: some View {
         VStack {
 //            Text("Latitude: \(locationDataManager.locationManager.location?.coordinate.latitude.description ?? "Error loading")")

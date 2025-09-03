@@ -11,7 +11,7 @@ struct RootTabView: View {
     var body: some View {
         TabView {
             Tab("UV Index", systemImage: "sun.max.fill") {
-                UVIndexView()
+//                UVIndexView()
             }
             
             Tab("Forecast", systemImage: "chart.xyaxis.line") {
