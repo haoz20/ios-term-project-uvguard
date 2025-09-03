@@ -10,7 +10,7 @@ import SwiftUI
 struct SettingsView: View {
     
     @State private var notificationsOn = false
-    @State private var selectedAppearance = "System"
+    @State private var selectedAppearance: AppearanceOption = .system
     @State private var is24HourTimeOn = false
     @State private var selectedLanguage: LanguageOption = .english
     
@@ -32,12 +32,16 @@ struct SettingsView: View {
                     }
                 }
                 
-                Picker("Appearance", selection: $selectedAppearance){
-                    Text("System(Default)").tag("System")
-                    Text("Light").tag("Light")
-                    Text("Dark").tag("Dark")
+                NavigationLink{
+                    AppearanceView(selection: $selectedAppearance)
+                }label : {
+                    HStack {
+                        Text("Appearance")
+                        Spacer()
+                        Text(selectedAppearance.rawValue)
+                            .foregroundStyle(.secondary)
+                    }
                 }
-                .pickerStyle(.automatic)
                 
                 
             }

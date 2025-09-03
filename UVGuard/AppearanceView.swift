@@ -1,5 +1,5 @@
 //
-//  LanguageView.swift
+//  AppearanceView.swift
 //  UVGuard
 //
 //  Created by Thiri Htet on 03/09/2025.
@@ -7,17 +7,18 @@
 
 import SwiftUI
 
-struct LanguageView: View {
+struct AppearanceView: View {
     
-    @Binding var selection : LanguageOption
+    @Binding var selection : AppearanceOption
     
     var body: some View {
+        
         List{
             Section{
-                ForEach(LanguageOption.allCases) { option in
+                ForEach(AppearanceOption.allCases) { option in
                     Button {
                         selection = option
-                    }label: {
+                    }label : {
                         HStack{
                             Text(option.rawValue)
                             Spacer()
@@ -25,22 +26,24 @@ struct LanguageView: View {
                                 Image(systemName: "checkmark")
                                     .font(.body.weight(.semibold))
                             }
+                                
                         }
                     }
-                    .foregroundColor(.primary)
-                    
                 }
+                .foregroundColor(.primary)
             }
         }
-        .navigationTitle("Language")
+        .navigationTitle("Appearance")
         .navigationBarTitleDisplayMode(.inline)
+        
     }
 }
 
-enum LanguageOption : String, CaseIterable, Identifiable {
-    case english = "English"
-    case chinese = "Chinese"
-    case burmese = "Burmese"
+
+enum AppearanceOption : String, CaseIterable, Identifiable {
+    case system = "System"
+    case dark = "Dark"
+    case light = "Light"
     
     var id: String {
         rawValue
@@ -48,13 +51,17 @@ enum LanguageOption : String, CaseIterable, Identifiable {
     
     var shortLabel : String {
         switch self {
-        case .english : return "English"
-        case .burmese : return "Burmese"
-        case .chinese : return "Chinese"
+        case .system : return "System"
+        case .dark : return "Dark"
+        case .light : return "Light"
         }
     }
+    
+    
 }
 
+
+
 #Preview {
-    LanguageView(selection: .constant(.english))
+    AppearanceView(selection: .constant(.system))
 }
