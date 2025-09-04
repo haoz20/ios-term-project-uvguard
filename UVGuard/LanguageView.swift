@@ -46,7 +46,7 @@ enum LanguageOption : String, CaseIterable, Identifiable {
         rawValue
     }
     
-    var shortLabel : String {
+    var shortLabel: String {
         switch self {
         case .english : return "English"
         case .burmese : return "Burmese"
