@@ -18,7 +18,7 @@ struct AppearanceView: View {
                 ForEach(AppearanceOption.allCases) { option in
                     Button {
                         selection = option
-                    }label : {
+                    }label: {
                         HStack{
                             Text(option.rawValue)
                             Spacer()
