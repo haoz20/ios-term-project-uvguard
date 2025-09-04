@@ -23,7 +23,7 @@ struct RootTabView: View {
             }
             
             Tab("Settings", systemImage: "gearshape") {
-//                SettingsView()
+                SettingsView()
             }
         }
         .accentColor(.orange)
