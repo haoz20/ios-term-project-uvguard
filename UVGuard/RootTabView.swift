@@ -10,24 +10,23 @@ import SwiftUI
 struct RootTabView: View {
     var body: some View {
         TabView {
-            Tab("UV", systemImage: "sun.max.fill") {
-                
+            Tab("UV Index", systemImage: "sun.max.fill") {
+//                UVIndexView()
             }
             
             Tab("Forecast", systemImage: "chart.xyaxis.line") {
-                
+                Text("Forecast Page")
             }
             
             Tab("Locations", systemImage: "map") {
-                
+                Text("Locations Page")
             }
             
             Tab("Settings", systemImage: "gearshape") {
                 SettingsView()
             }
-            
         }
-        
+        .accentColor(.orange)
     }
 }
 
