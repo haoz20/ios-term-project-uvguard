@@ -23,7 +23,7 @@ struct RootTabView: View {
             }
             
             Tab("Settings", systemImage: "gearshape") {
-                Text("Setting Page")
+                SettingsView()
             }
             
         }
