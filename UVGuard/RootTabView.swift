@@ -11,15 +11,15 @@ struct RootTabView: View {
     var body: some View {
         TabView {
             Tab("UV Index", systemImage: "sun.max.fill") {
-//                UVIndexView()
+                UVIndexView()
             }
             
             Tab("Forecast", systemImage: "chart.xyaxis.line") {
                 Text("Forecast Page")
             }
             
-            Tab("Locations", systemImage: "map") {
-                Text("Locations Page")
+            Tab("Cities", systemImage: "map") {
+                CitiesView()
             }
             
             Tab("Settings", systemImage: "gearshape") {
