@@ -3,6 +3,7 @@ import SwiftUI
 struct SearchCityView: View {
     @State private var text: String = ""
     @State private var vm = SearchCityViewModel()
+    var saveCity: (CityModel) -> Void = { _ in }
     
     @Environment(\.dismiss) var dismiss
     
@@ -29,6 +30,7 @@ struct SearchCityView: View {
                     List(vm.results) { city in
                         
                         Button {
+                            saveCity(city)
                             dismiss()
                         } label: {
                             VStack(alignment: .leading, spacing: 2) {

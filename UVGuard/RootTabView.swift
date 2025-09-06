@@ -26,7 +26,7 @@ struct RootTabView: View {
                 SettingsView()
             }
         }
-        .accentColor(.orange)
+        .tint(.orange)
     }
 }
 
