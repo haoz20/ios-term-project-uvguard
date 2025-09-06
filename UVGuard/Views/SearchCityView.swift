@@ -3,7 +3,9 @@ import SwiftUI
 struct SearchCityView: View {
     @State private var text: String = ""
     @State private var vm = SearchCityViewModel()
-
+    
+    @Environment(\.dismiss) var dismiss
+    
     var body: some View {
         NavigationStack {
             Group {
@@ -25,15 +27,23 @@ struct SearchCityView: View {
                     )
                 } else {
                     List(vm.results) { city in
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(city.name).font(.body)
-                            HStack(spacing: 8) {
-                                Text(city.country)
-//                                if let tz = city.timeZone, !tz.isEmpty {
-//                                    Text(tz).foregroundStyle(.secondary)
-//                                }
+                        
+                        Button {
+                            dismiss()
+                        } label: {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(city.name).font(.body)
+                                HStack(spacing: 8) {
+                                    if let country = city.country, !country.isEmpty {
+                                        Text(country)
+                                    }
+                                    if let timeZone = city.timeZone, !timeZone.isEmpty, timeZone != city.country {
+                                        Text(timeZone).foregroundStyle(.secondary)
+                                    }
+                                }
+                                .font(.caption)
                             }
-                            .font(.caption)
+                            
                         }
                     }
                     .listStyle(.plain)

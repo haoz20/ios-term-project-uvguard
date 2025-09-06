@@ -18,8 +18,8 @@ struct CityModel: Identifiable, Codable {
     let name: String
     let latitude: Double
     let longitude: Double
-    let timeZone: String
-    let country: String
+    let timeZone: String?
+    let country: String?
     
     enum CodingKeys: String, CodingKey {
         case id, name, latitude, longitude, country
