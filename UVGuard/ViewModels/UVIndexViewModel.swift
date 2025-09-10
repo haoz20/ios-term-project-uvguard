@@ -10,7 +10,7 @@ import Alamofire
 
 @Observable
 class UVIndexViewModel {
-    var currentUV: Int?
+    var currentUV: Double?
     var currentTimeRange: String?
     var errorMessage: String?
     var isLoading: Bool = false
@@ -33,20 +33,35 @@ class UVIndexViewModel {
             "forecast_hours": 24   // Get data for today only
         ]
         
+//        AF.request(apiBaseURL, parameters: parameters)
+//            .validate(statusCode: 200..<300)
+//            .responseDecodable(of: UVResponse.self) { [weak self] response in
+//                DispatchQueue.main.async {
+//                    self?.isLoading = false
+//                    
+//                    switch response.result {
+//                    case .success(let uvResponse):
+//                        self?.processUVResponse(uvResponse)
+//                    case .failure(_):
+//                        print("Fail")
+//                    }
+//                }
+//            }
+        
         AF.request(apiBaseURL, parameters: parameters)
-            .validate(statusCode: 200..<300)
-            .responseDecodable(of: UVResponse.self) { [weak self] response in
-                DispatchQueue.main.async {
-                    self?.isLoading = false
-                    
-                    switch response.result {
-                    case .success(let uvResponse):
-                        self?.processUVResponse(uvResponse)
-//                    case .failure(let error):
-//                        self?.handleAPIError(error)
-                    case .failure(_):
-                        print("Fail")
+            .validate(statusCode: 200..<300).response { response in
+                self.isLoading = false
+                switch response.result {
+                case .success(let uvResponse):
+                    do {
+                        let decoder = JSONDecoder()
+                        let uv = try decoder.decode(UVResponse.self, from: uvResponse!)
+                        self.processUVResponse(uv)
+                    } catch {
+                        
                     }
+                case .failure(let error):
+                    print(error.localizedDescription)
                 }
             }
     }
@@ -75,23 +90,23 @@ class UVIndexViewModel {
 //    }
     
     
-    func loadMockData() {
-        guard let url = Bundle.main.url(forResource: "mock", withExtension: "json") else {
-            errorMessage = "Failed to find mock.json"
-            return
-        }
-        
-        do {
-            let data = try Data(contentsOf: url)
-            let decoder = JSONDecoder()
-            let uvResponse = try decoder.decode(UVResponse.self, from: data)
-            
-            findCurrentUV(from: uvResponse)
-            
-        } catch {
-            errorMessage = "Failed to load or parse mock.json: \(error.localizedDescription)"
-        }
-    }
+//    func loadMockData() {
+//        guard let url = Bundle.main.url(forResource: "mock", withExtension: "json") else {
+//            errorMessage = "Failed to find mock.json"
+//            return
+//        }
+//        
+//        do {
+//            let data = try Data(contentsOf: url)
+//            let decoder = JSONDecoder()
+//            let uvResponse = try decoder.decode(UVResponse.self, from: data)
+//            
+//            findCurrentUV(from: uvResponse)
+//            
+//        } catch {
+//            errorMessage = "Failed to load or parse mock.json: \(error.localizedDescription)"
+//        }
+//    }
     
     private func findCurrentUV(from response: UVResponse) {
         
@@ -124,7 +139,7 @@ class UVIndexViewModel {
 
             if now >= date && now < nextDate {
                 print("✅ Found match! Current time \(now) is between \(date) and \(nextDate)")
-                self.currentUV = Int(response.hourly.uvIndex[index])
+                self.currentUV = response.hourly.uvIndex[index]
                 let timeFormat = DateFormatter()
                 timeFormat.dateFormat = "h a"
                 timeFormat.timeZone = dateFormatter.timeZone

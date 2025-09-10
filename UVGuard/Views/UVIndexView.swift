@@ -1,4 +1,3 @@
-
 //
 //  UVIndexView.swift
 //  UVGuard
@@ -7,62 +6,44 @@
 //
 
 import SwiftUI
+import CoreLocation
 
 struct UVIndexView: View {
     @StateObject private var locationDataManager = LocationDataManager()
     @State private var viewModel = UVIndexViewModel()
     
     var body: some View {
-        VStack(spacing: 0) {
-            if viewModel.isLoading {
-                ProgressView("Fetching UV data...")
-                    .font(.headline)
-            } else if let uv = viewModel.currentUV, let timeRange = viewModel.currentTimeRange {
-                Text("Current UV Index")
-                    .font(.title)
-                
-                Text(String(uv))
-                    .font(.system(size: 80, weight: .bold))
-                    .foregroundColor(uvColor(for: uv))
-                
-                Text("Time: \(timeRange)")
-                    .font(.headline)
-                
+        ZStack {
+            Color(.systemGroupedBackground).ignoresSafeArea()
+            VStack {
                 if let location = locationDataManager.locationManager.location {
-                    Text("Location: \(String(format: "%.4f", location.coordinate.latitude)), \(String(format: "%.4f", location.coordinate.longitude))")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                    CityHeaderView(location: location)
                 }
-                
-            } else if let errorMessage = viewModel.errorMessage {
-                VStack(spacing: 10) {
-                    Image(systemName: "exclamationmark.triangle")
-                        .font(.largeTitle)
-                        .foregroundColor(.orange)
-                    
-                    Text(errorMessage)
-                        .foregroundColor(.red)
-                        .multilineTextAlignment(.center)
-                        .padding()
-                    
-                    Button("Retry") {
-                        fetchUVData()
+                ScrollView {
+                    VStack(spacing: 24) {
+                        Group {
+                            if viewModel.isLoading {
+                                ProgressView("Fetching UV data...")
+                                    .font(.headline)
+                                    .frame(height: 300)
+                            } else if let uv = viewModel.currentUV {
+                                UVComponent(uvData: uv)
+                            } else if let errorMessage = viewModel.errorMessage {
+                                errorView(message: errorMessage)
+                            } else {
+                                waitingForLocationView()
+                            }
+                        }
                     }
-                    .buttonStyle(.borderedProminent)
+                    .padding(.top, 20)
                 }
-            } else {
-                Text("Waiting for location...")
-                    .font(.headline)
-                    .foregroundColor(.secondary)
             }
-        }
-        .padding()
-        .onAppear {
-            setupLocationAndFetchData()
-        }
-        .onChange(of: locationDataManager.authorizationStatus) { _, status in
-            if status == .authorizedWhenInUse {
-                fetchUVData()
+            .padding(.horizontal)
+            .onAppear(perform: setupLocationAndFetchData)
+            .onChange(of: locationDataManager.authorizationStatus) { _, status in
+                if status == .authorizedWhenInUse {
+                    fetchUVData()
+                }
             }
         }
     }
@@ -77,7 +58,7 @@ struct UVIndexView: View {
     
     private func fetchUVData() {
         guard let location = locationDataManager.locationManager.location else {
-            viewModel.errorMessage = "Unable to get current location"
+            viewModel.errorMessage = "Unable to get current location. Please ensure location services are enabled."
             return
         }
         
@@ -87,19 +68,40 @@ struct UVIndexView: View {
         )
     }
     
-    private func uvColor(for uvIndex: Int) -> Color {
-        switch uvIndex {
-        case 0...2:
-            return .green
-        case 3...5:
-            return .yellow
-        case 6...7:
-            return .orange
-        case 8...10:
-            return .red
-        default:
-            return .purple
+    @ViewBuilder
+    private func errorView(message: String) -> some View {
+        VStack(spacing: 16) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 50))
+                .foregroundColor(.orange)
+            
+            Text(message)
+                .font(.headline)
+                .multilineTextAlignment(.center)
+                .foregroundColor(.secondary)
+            
+            Button("Retry") {
+                fetchUVData()
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(.orange)
         }
+        .padding(40)
+        .background(.regularMaterial)
+        .cornerRadius(20)
+    }
+    
+    @ViewBuilder
+    private func waitingForLocationView() -> some View {
+        VStack(spacing: 16) {
+            ProgressView()
+            Text("Waiting for location...")
+                .font(.headline)
+                .foregroundColor(.secondary)
+        }
+        .padding(40)
+        .background(.regularMaterial)
+        .cornerRadius(20)
     }
 }
 

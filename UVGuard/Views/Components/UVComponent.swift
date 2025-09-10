@@ -9,10 +9,10 @@ struct UVComponent: View {
     // UV Index categories and colors
     private var uvLevel: UVLevel {
         switch uvData {
-        case 0...2: return .low
-        case 3...5: return .moderate
-        case 6...7: return .high
-        case 8...10: return .veryHigh
+        case 0..<3: return .low
+        case 3..<6: return .moderate
+        case 6..<8: return .high
+        case 8..<11: return .veryHigh
         default: return .extreme
         }
     }
@@ -98,7 +98,7 @@ struct UVComponent: View {
                 
                 // UV Value
                 VStack(spacing: 4) {
-                    Text("\(uvData, specifier: "%.1f")")
+                    Text("\(uvData, specifier: "%.f")")
                         .font(.system(size: 36, weight: .bold, design: .rounded))
                         .foregroundColor(uvColor)
                         .scaleEffect(animationProgress)
@@ -180,9 +180,6 @@ struct UVComponent: View {
         .onAppear {
             startAnimations()
         }
-//        .onChange(of: uvData) { _ in
-//            resetAndAnimate()
-//        }
     }
     
     private func startAnimations() {
