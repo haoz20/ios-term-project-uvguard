@@ -15,6 +15,8 @@ class UVIndexViewModel {
     var errorMessage: String?
     var isLoading: Bool = false
     
+    var hourlyForecast: [(time: String, uv: Double)] = []
+    
     private let apiBaseURL = "https://api.open-meteo.com/v1/forecast"
 
     init() {
@@ -30,7 +32,7 @@ class UVIndexViewModel {
             "longitude": longitude,
             "hourly": "uv_index",
             "timezone": "auto", // This will use the location's timezone
-            "forecast_hours": 24   // Get data for today only
+            "forecast_hours": 24
         ]
         
 //        AF.request(apiBaseURL, parameters: parameters)
@@ -67,6 +69,16 @@ class UVIndexViewModel {
     }
     
     private func processUVResponse(_ response: UVResponse) {
+        // Populate hourly forecast data
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
+        dateFormatter.timeZone = TimeZone(identifier: response.timezone) ?? TimeZone(identifier: "Asia/Bangkok")
+        
+        hourlyForecast = zip(response.hourly.time, response.hourly.uvIndex).compactMap { (timeString, uvIndex) in
+            guard let date = dateFormatter.date(from: timeString) else { return nil }
+            return (time: timeString, uv: uvIndex)
+        }
+        
         findCurrentUV(from: response)
     }
     
