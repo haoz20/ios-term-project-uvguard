@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SettingsView: View {
     
-    @State private var notificationsOn = false
+    @State private var notificationSettings = NotificationSettings.shared
     @State private var selectedAppearance: AppearanceOption = .system
     @State private var is24HourTimeOn = false
     @State private var selectedLanguage: LanguageOption = .english
@@ -17,7 +17,33 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form{
-                Toggle("Notification", isOn: $notificationsOn)
+                // UV Notifications Section
+                NavigationLink {
+                    NotificationSettingsView()
+                } label: {
+                    HStack {
+                        Image(systemName: "bell.badge.fill")
+                            .foregroundColor(notificationSettings.notificationsEnabled ? .blue : .secondary)
+                            .frame(width: 24)
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("UV Notifications")
+                            if notificationSettings.notificationsEnabled {
+                                Text("Enabled")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        
+                        Spacer()
+                        
+                        if notificationSettings.notificationsEnabled {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                                .font(.caption)
+                        }
+                    }
+                }
                 
                 Toggle("24-hour Time", isOn: $is24HourTimeOn)
                 

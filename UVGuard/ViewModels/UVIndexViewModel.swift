@@ -16,8 +16,11 @@ class UVIndexViewModel {
     var isLoading: Bool = false
     
     var hourlyForecast: [(time: String, uv: Double)] = []
+    var timezone: String = "UTC"
     
     private let apiBaseURL = "https://api.open-meteo.com/v1/forecast"
+    private let notificationManager = UVNotificationManager.shared
+    private let notificationSettings = NotificationSettings.shared
 
     init() {
         // Don't load mock data automatically - wait for API call
@@ -69,6 +72,9 @@ class UVIndexViewModel {
     }
     
     private func processUVResponse(_ response: UVResponse) {
+        // Store timezone
+        self.timezone = response.timezone
+        
         // Populate hourly forecast data
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
@@ -80,6 +86,31 @@ class UVIndexViewModel {
         }
         
         findCurrentUV(from: response)
+        
+        // Schedule notifications if enabled
+        scheduleNotificationsIfNeeded()
+    }
+    
+    // MARK: - Notification Scheduling
+    
+    private func scheduleNotificationsIfNeeded() {
+        guard notificationSettings.notificationsEnabled else { return }
+        
+        // Schedule daily forecast notification
+        if notificationSettings.dailyForecastEnabled {
+            let calendar = Calendar.current
+            let hour = calendar.component(.hour, from: notificationSettings.dailyForecastTime)
+            notificationManager.scheduleDailyForecastNotification(at: hour, hourlyForecast: hourlyForecast)
+        }
+        
+        // Schedule threshold notifications
+        if notificationSettings.thresholdNotificationsEnabled {
+            notificationManager.scheduleUVThresholdNotifications(
+                threshold: notificationSettings.uvThreshold,
+                hourlyForecast: hourlyForecast,
+                timezone: timezone
+            )
+        }
     }
     
 //    private func handleAPIError(_ error: AFError) {
