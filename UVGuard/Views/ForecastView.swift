@@ -13,17 +13,9 @@ struct ForecastView: View {
     
     var body: some View {
         ZStack {
-            // Background gradient
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color.blue.opacity(0.1),
-                    Color.purple.opacity(0.05),
-                    Color(.systemGroupedBackground)
-                ]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            // Warm background gradient
+            LinearGradient.uvBackground
+                .ignoresSafeArea()
             
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: 24) {
@@ -70,15 +62,15 @@ struct ForecastView: View {
                     Text("UV Forecast")
                         .font(.largeTitle)
                         .fontWeight(.bold)
-                        .foregroundColor(.primary)
+                        .uvPrimaryText()
                     
                     if let location = locationDataManager.locationManager.location {
                         HStack {
                             Image(systemName: "location.fill")
-                                .foregroundColor(.blue)
+                                .foregroundColor(.uvAccent)
                             Text(getCurrentLocationName())
                                 .font(.subheadline)
-                                .foregroundColor(.secondary)
+                                .uvSecondaryText()
                         }
                     }
                 }
@@ -89,10 +81,11 @@ struct ForecastView: View {
                     Text(Date().formatted(.dateTime.weekday(.wide)))
                         .font(.headline)
                         .fontWeight(.semibold)
+                        .uvPrimaryText()
                     
                     Text(Date().formatted(.dateTime.month().day().year()))
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .uvSecondaryText()
                 }
             }
         }
@@ -104,16 +97,15 @@ struct ForecastView: View {
         VStack(spacing: 20) {
             ProgressView()
                 .scaleEffect(1.5)
-                .tint(.blue)
+                .tint(.uvAccent)
             
             Text("Loading UV forecast...")
                 .font(.headline)
-                .foregroundColor(.secondary)
+                .uvSecondaryText()
         }
         .frame(height: 200)
         .frame(maxWidth: .infinity)
-        .background(.regularMaterial)
-        .cornerRadius(20)
+        .modifier(UVCardModifier())
     }
     
     // MARK: - Hourly Forecast Section
@@ -123,15 +115,16 @@ struct ForecastView: View {
                 Text("24-Hour Forecast")
                     .font(.title2)
                     .fontWeight(.bold)
+                    .uvPrimaryText()
                 
                 Spacer()
                 
                 Text("\(viewModel.hourlyForecast.count) hours")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .uvSecondaryText()
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
-                    .background(.ultraThinMaterial)
+                    .background(Color.uvCardBackground.opacity(0.5))
                     .cornerRadius(12)
             }
             
@@ -148,9 +141,7 @@ struct ForecastView: View {
             }
         }
         .padding()
-        .background(.regularMaterial)
-        .cornerRadius(20)
-        .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 4)
+        .modifier(UVCardModifier())
     }
     
     // MARK: - Statistics Section
@@ -159,6 +150,7 @@ struct ForecastView: View {
             Text("Today's Overview")
                 .font(.title2)
                 .fontWeight(.bold)
+                .uvPrimaryText()
             
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 16) {
                 statisticCard(
@@ -172,7 +164,7 @@ struct ForecastView: View {
                     title: "UV Hours",
                     value: "\(getUVHours())",
                     icon: "clock.fill",
-                    color: .blue
+                    color: .uvAccent
                 )
                 
                 statisticCard(
@@ -186,14 +178,12 @@ struct ForecastView: View {
                     title: "Danger Hours",
                     value: "\(getDangerHours())",
                     icon: "exclamationmark.triangle.fill",
-                    color: .red
+                    color: .uvDanger
                 )
             }
         }
         .padding()
-        .background(.regularMaterial)
-        .cornerRadius(20)
-        .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 4)
+        .modifier(UVCardModifier())
     }
     
     // MARK: - Recommendations Section
@@ -202,6 +192,7 @@ struct ForecastView: View {
             Text("Recommendations")
                 .font(.title2)
                 .fontWeight(.bold)
+                .uvPrimaryText()
             
             VStack(spacing: 12) {
                 ForEach(getRecommendations(), id: \.0) { recommendation in
@@ -215,9 +206,7 @@ struct ForecastView: View {
             }
         }
         .padding()
-        .background(.regularMaterial)
-        .cornerRadius(20)
-        .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 4)
+        .modifier(UVCardModifier())
     }
     
     // MARK: - Helper Views
@@ -235,16 +224,16 @@ struct ForecastView: View {
                 Text(value)
                     .font(.title2)
                     .fontWeight(.bold)
-                    .foregroundColor(.primary)
+                    .uvPrimaryText()
                 
                 Text(title)
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .uvSecondaryText()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding()
-        .background(.ultraThinMaterial)
+        .background(Color.uvCardBackground.opacity(0.5))
         .cornerRadius(12)
     }
     
@@ -259,16 +248,17 @@ struct ForecastView: View {
                 Text(title)
                     .font(.subheadline)
                     .fontWeight(.semibold)
+                    .uvPrimaryText()
                 
                 Text(description)
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .uvSecondaryText()
             }
             
             Spacer()
         }
         .padding()
-        .background(.ultraThinMaterial)
+        .background(Color.uvCardBackground.opacity(0.5))
         .cornerRadius(12)
     }
     
@@ -276,42 +266,39 @@ struct ForecastView: View {
         VStack(spacing: 16) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 50))
-                .foregroundColor(.orange)
+                .foregroundColor(.uvDanger)
             
             Text(message)
                 .font(.headline)
                 .multilineTextAlignment(.center)
-                .foregroundColor(.secondary)
+                .uvSecondaryText()
             
             Button("Retry") {
                 fetchUVData()
             }
-            .buttonStyle(.borderedProminent)
-            .tint(.orange)
+            .buttonStyle(UVDangerButtonStyle())
         }
         .padding(40)
-        .background(.regularMaterial)
-        .cornerRadius(20)
+        .modifier(UVCardModifier())
     }
     
     private var emptyStateView: some View {
         VStack(spacing: 16) {
             Image(systemName: "sun.max")
                 .font(.system(size: 50))
-                .foregroundColor(.secondary)
+                .foregroundColor(.uvAccent)
             
             Text("No forecast data available")
                 .font(.headline)
-                .foregroundColor(.secondary)
+                .uvPrimaryText()
             
             Text("Pull to refresh or check your location settings")
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .uvSecondaryText()
                 .multilineTextAlignment(.center)
         }
         .padding(40)
-        .background(.regularMaterial)
-        .cornerRadius(20)
+        .modifier(UVCardModifier())
     }
     
     // MARK: - Helper Functions

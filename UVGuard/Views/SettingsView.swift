@@ -16,19 +16,19 @@ struct SettingsView: View {
     
     var body: some View {
         NavigationStack {
-            Form{
+            Form {
                 // UV Notifications Section
                 NavigationLink {
                     NotificationSettingsView()
                 } label: {
                     HStack {
                         Image(systemName: "bell.badge.fill")
-                            .foregroundColor(notificationSettings.notificationsEnabled ? .blue : .secondary)
+                            .foregroundColor(isNotificationsEnabled ? .blue : .secondary)
                             .frame(width: 24)
                         
                         VStack(alignment: .leading, spacing: 2) {
                             Text("UV Notifications")
-                            if notificationSettings.notificationsEnabled {
+                            if isNotificationsEnabled {
                                 Text("Enabled")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
@@ -37,7 +37,7 @@ struct SettingsView: View {
                         
                         Spacer()
                         
-                        if notificationSettings.notificationsEnabled {
+                        if isNotificationsEnabled {
                             Image(systemName: "checkmark.circle.fill")
                                 .foregroundColor(.green)
                                 .font(.caption)
@@ -47,10 +47,10 @@ struct SettingsView: View {
                 
                 Toggle("24-hour Time", isOn: $is24HourTimeOn)
                 
-                NavigationLink{
+                NavigationLink {
                     LanguageView(selection: $selectedLanguage)
-                }label : {
-                    HStack{
+                } label: {
+                    HStack {
                         Text("Language")
                         Spacer()
                         Text(selectedLanguage.shortLabel)
@@ -58,9 +58,9 @@ struct SettingsView: View {
                     }
                 }
                 
-                NavigationLink{
+                NavigationLink {
                     AppearanceView(selection: $selectedAppearance)
-                }label : {
+                } label: {
                     HStack {
                         Text("Appearance")
                         Spacer()
@@ -68,16 +68,17 @@ struct SettingsView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-                
-                
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
         }
-       
+    }
+    
+    // Computed property to check if any notifications are enabled
+    private var isNotificationsEnabled: Bool {
+        notificationSettings.dailyForecastEnabled || notificationSettings.thresholdNotificationsEnabled
     }
 }
-
 
 #Preview {
     SettingsView()

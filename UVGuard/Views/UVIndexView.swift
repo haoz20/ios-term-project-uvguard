@@ -14,7 +14,9 @@ struct UVIndexView: View {
     
     var body: some View {
         ZStack {
-            Color(.systemGroupedBackground).ignoresSafeArea()
+            // Warm background gradient
+            LinearGradient.uvBackground
+                .ignoresSafeArea()
             VStack {
                 if let location = locationDataManager.locationManager.location {
                     CityHeaderView(location: location)
@@ -73,35 +75,33 @@ struct UVIndexView: View {
         VStack(spacing: 16) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 50))
-                .foregroundColor(.orange)
+                .foregroundColor(.uvDanger)
             
             Text(message)
                 .font(.headline)
                 .multilineTextAlignment(.center)
-                .foregroundColor(.secondary)
+                .foregroundColor(.uvSecondaryText)
             
             Button("Retry") {
                 fetchUVData()
             }
-            .buttonStyle(.borderedProminent)
-            .tint(.orange)
+            .buttonStyle(UVDangerButtonStyle())
         }
         .padding(40)
-        .background(.regularMaterial)
-        .cornerRadius(20)
+        .modifier(UVCardModifier())
     }
     
     @ViewBuilder
     private func waitingForLocationView() -> some View {
         VStack(spacing: 16) {
             ProgressView()
+                .tint(.uvAccent)
             Text("Waiting for location...")
                 .font(.headline)
-                .foregroundColor(.secondary)
+                .foregroundColor(.uvSecondaryText)
         }
         .padding(40)
-        .background(.regularMaterial)
-        .cornerRadius(20)
+        .modifier(UVCardModifier())
     }
 }
 

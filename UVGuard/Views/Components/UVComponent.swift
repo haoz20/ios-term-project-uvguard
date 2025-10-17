@@ -59,7 +59,7 @@ struct UVComponent: View {
                 Text("UV Index")
                     .font(.headline)
                     .fontWeight(.semibold)
-                    .foregroundColor(.primary)
+                    .uvPrimaryText()
                 
                 Spacer()
             }
@@ -98,15 +98,15 @@ struct UVComponent: View {
                 
                 // UV Value
                 VStack(spacing: 4) {
-                    Text("\(uvData, specifier: "%.f")")
-                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                    Text("\(Int(round(uvData)))")
+                        .font(.system(size: 48, weight: .bold, design: .rounded))
                         .foregroundColor(uvColor)
                         .scaleEffect(animationProgress)
                     
                     Text(uvDescription)
                         .font(.caption)
                         .fontWeight(.medium)
-                        .foregroundColor(.secondary)
+                        .uvSecondaryText()
                         .opacity(animationProgress)
                 }
             }
@@ -116,7 +116,7 @@ struct UVComponent: View {
                 Text("UV Scale")
                     .font(.subheadline)
                     .fontWeight(.medium)
-                    .foregroundColor(.secondary)
+                    .uvSecondaryText()
                 
                 HStack(spacing: 2) {
                     ForEach(0..<11, id: \.self) { index in
@@ -137,11 +137,11 @@ struct UVComponent: View {
                 HStack {
                     Text("0")
                         .font(.caption2)
-                        .foregroundColor(.secondary)
+                        .uvSecondaryText()
                     Spacer()
                     Text("11+")
                         .font(.caption2)
-                        .foregroundColor(.secondary)
+                        .uvSecondaryText()
                 }
             }
             
@@ -153,11 +153,12 @@ struct UVComponent: View {
                     Text("Recommendation")
                         .font(.subheadline)
                         .fontWeight(.semibold)
+                        .uvPrimaryText()
                 }
                 
                 Text(uvAdvice)
                     .font(.body)
-                    .foregroundColor(.secondary)
+                    .uvSecondaryText()
                     .multilineTextAlignment(.leading)
             }
             .padding()
@@ -172,11 +173,7 @@ struct UVComponent: View {
             .opacity(animationProgress)
         }
         .padding(24)
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(.regularMaterial)
-                .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 4)
-        )
+        .modifier(UVCardModifier())
         .onAppear {
             startAnimations()
         }
@@ -236,5 +233,5 @@ enum UVLevel {
         }
         .padding()
     }
-    .background(Color(.systemGroupedBackground))
+    .background(LinearGradient.uvBackground)
 }

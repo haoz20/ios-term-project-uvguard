@@ -9,17 +9,20 @@ struct CityHeaderView: View {
         HStack(spacing: 4) {
             HStack {
                 Image(systemName: "location.fill")
+                    .foregroundColor(.uvAccent)
                 Text(placemark?.locality ?? "Loading...")
                     .font(.headline)
                     .fontWeight(.bold)
+                    .uvPrimaryText()
             }
             
             Spacer()
             VStack(alignment: .trailing) {
                 Text(Date().formatted(.dateTime.month().day()))
                     .font(.headline)
-                    .foregroundColor(.secondary)
+                    .uvSecondaryText()
                 Text(Date().formatted(.dateTime.hour().minute()))
+                    .uvSecondaryText()
             }
             
         }

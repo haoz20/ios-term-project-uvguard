@@ -12,17 +12,8 @@ import SwiftUI
 class NotificationSettings {
     static let shared = NotificationSettings()
     
-    // User preferences
-    var notificationsEnabled: Bool {
-        didSet {
-            UserDefaults.standard.set(notificationsEnabled, forKey: "notificationsEnabled")
-            if !notificationsEnabled {
-                UVNotificationManager.shared.removeAllNotifications()
-            }
-        }
-    }
-    
-    var uvThreshold: Double {
+    // User preferences - removed notificationsEnabled toggle (use system settings instead)
+    var uvThreshold: Int {  // Changed to Int for discrete values
         didSet {
             UserDefaults.standard.set(uvThreshold, forKey: "uvThreshold")
         }
@@ -54,8 +45,7 @@ class NotificationSettings {
     
     private init() {
         // Load from UserDefaults or use defaults
-        self.notificationsEnabled = UserDefaults.standard.object(forKey: "notificationsEnabled") as? Bool ?? false
-        self.uvThreshold = UserDefaults.standard.object(forKey: "uvThreshold") as? Double ?? 6.0
+        self.uvThreshold = UserDefaults.standard.object(forKey: "uvThreshold") as? Int ?? 6
         self.dailyForecastEnabled = UserDefaults.standard.object(forKey: "dailyForecastEnabled") as? Bool ?? true
         self.thresholdNotificationsEnabled = UserDefaults.standard.object(forKey: "thresholdNotificationsEnabled") as? Bool ?? true
         
@@ -73,7 +63,8 @@ class NotificationSettings {
     // MARK: - Helper Methods
     
     func getThresholdLevel() -> UVLevel {
-        switch uvThreshold {
+        let threshold = Double(uvThreshold)
+        switch threshold {
         case 0..<3: return .low
         case 3..<6: return .moderate
         case 6..<8: return .high
@@ -84,6 +75,6 @@ class NotificationSettings {
     
     func getThresholdDescription() -> String {
         let level = getThresholdLevel()
-        return "\(String(format: "%.1f", uvThreshold)) - \(level.description)"
+        return "\(uvThreshold) - \(level.description)"
     }
 }

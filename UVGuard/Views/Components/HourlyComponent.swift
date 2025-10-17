@@ -51,7 +51,7 @@ struct HourlyComponent: View {
             // Time Display
             Text(timeString)
                 .font(.system(size: 13, weight: .semibold, design: .rounded))
-                .foregroundColor(.primary)
+                .uvPrimaryText()
             
             // UV Index Circle
             ZStack {
@@ -71,13 +71,13 @@ struct HourlyComponent: View {
             // UV Category
             Text(uvDescription)
                 .font(.system(size: 9, weight: .medium))
-                .foregroundColor(.secondary)
+                .uvSecondaryText()
                 .lineLimit(1)
         }
         .padding(10)
         .background(
             RoundedRectangle(cornerRadius: 10)
-                .fill(.ultraThinMaterial)
+                .fill(Color.uvCardBackground.opacity(0.6))
                 .stroke(uvColor.opacity(0.4), lineWidth: 1)
         )
     }
