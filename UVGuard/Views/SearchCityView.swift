@@ -9,46 +9,100 @@ struct SearchCityView: View {
     
     var body: some View {
         NavigationStack {
-            Group {
-                if vm.isLoading {
-                    ProgressView("Searching…")
+            ZStack {
+                // Warm background gradient
+                LinearGradient.uvBackground
+                    .ignoresSafeArea()
+                
+                Group {
+                    if vm.isLoading {
+                        VStack(spacing: 16) {
+                            ProgressView()
+                                .scaleEffect(1.5)
+                                .tint(.uvAccent)
+                            Text("Searching…")
+                                .font(.headline)
+                                .uvSecondaryText()
+                        }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if let msg = vm.errorMessage {
-                    VStack(spacing: 8) {
-                        Image(systemName: "exclamationmark.triangle").font(.largeTitle)
-                        Text("Something went wrong").font(.headline)
-                        Text(msg).foregroundStyle(.secondary)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if vm.results.isEmpty, !text.isEmpty {
-                    ContentUnavailableView(
-                        "No Results",
-                        systemImage: "magnifyingglass",
-                        description: Text("Try a different keyword.")
-                    )
-                } else {
-                    List(vm.results) { city in
-                        
-                        Button {
-                            saveCity(city)
-                            dismiss()
-                        } label: {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(city.name).font(.body)
-                                HStack(spacing: 8) {
-                                    if let country = city.country, !country.isEmpty {
-                                        Text(country)
+                    } else if let msg = vm.errorMessage {
+                        VStack(spacing: 16) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .font(.system(size: 50))
+                                .foregroundColor(.uvDanger)
+                            Text("Something went wrong")
+                                .font(.headline)
+                                .uvPrimaryText()
+                            Text(msg)
+                                .uvSecondaryText()
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, 40)
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    } else if vm.results.isEmpty, !text.isEmpty {
+                        VStack(spacing: 16) {
+                            Image(systemName: "magnifyingglass")
+                                .font(.system(size: 50))
+                                .foregroundColor(.uvAccent)
+                            Text("No Results")
+                                .font(.headline)
+                                .uvPrimaryText()
+                            Text("Try a different keyword.")
+                                .uvSecondaryText()
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    } else if !vm.results.isEmpty {
+                        ScrollView {
+                            LazyVStack(spacing: 12) {
+                                ForEach(vm.results) { city in
+                                    Button {
+                                        saveCity(city)
+                                        dismiss()
+                                    } label: {
+                                        HStack {
+                                            VStack(alignment: .leading, spacing: 6) {
+                                                Text(city.name)
+                                                    .font(.headline)
+                                                    .uvPrimaryText()
+                                                
+                                                HStack(spacing: 8) {
+                                                    if let country = city.country, !country.isEmpty {
+                                                        HStack(spacing: 4) {
+                                                            Image(systemName: "location.fill")
+                                                                .font(.caption2)
+                                                                .foregroundColor(.uvAccent)
+                                                            Text(country)
+                                                        }
+                                                    }
+                                                    if let timeZone = city.timeZone, !timeZone.isEmpty, timeZone != city.country {
+                                                        HStack(spacing: 4) {
+                                                            Image(systemName: "clock.fill")
+                                                                .font(.caption2)
+                                                                .foregroundColor(.uvAccent)
+                                                            Text(timeZone)
+                                                        }
+                                                    }
+                                                }
+                                                .font(.caption)
+                                                .uvSecondaryText()
+                                            }
+                                            
+                                            Spacer()
+                                            
+                                            Image(systemName: "chevron.right")
+                                                .font(.caption)
+                                                .foregroundColor(.uvAccent)
+                                        }
+                                        .padding()
+                                        .background(Color.uvCardBackground.opacity(0.5))
+                                        .cornerRadius(12)
                                     }
-                                    if let timeZone = city.timeZone, !timeZone.isEmpty, timeZone != city.country {
-                                        Text(timeZone).foregroundStyle(.secondary)
-                                    }
+                                    .buttonStyle(.plain)
                                 }
-                                .font(.caption)
                             }
-                            
+                            .padding()
                         }
                     }
-                    .listStyle(.plain)
                 }
             }
             .navigationTitle("Search City")
@@ -62,6 +116,14 @@ struct SearchCityView: View {
                 try? await Task.sleep(nanoseconds: 350_000_000) // ~350ms
                 guard q == text else { return } // ignore stale
                 await vm.search(q)
+            }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                    .foregroundColor(.uvAccent)
+                }
             }
         }
     }

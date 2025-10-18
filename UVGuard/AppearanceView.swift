@@ -9,55 +9,101 @@ import SwiftUI
 
 struct AppearanceView: View {
     
-    @Binding var selection : AppearanceOption
+    @Binding var selection: AppearanceOption
     
     var body: some View {
-        
-        List{
-            Section{
-                ForEach(AppearanceOption.allCases) { option in
-                    Button {
-                        selection = option
-                    }label: {
-                        HStack{
-                            Text(option.rawValue)
-                            Spacer()
-                            if selection == option {
-                                Image(systemName: "checkmark")
-                                    .font(.body.weight(.semibold))
+        ZStack {
+            // Background gradient
+            LinearGradient.uvBackground
+                .ignoresSafeArea()
+            
+            ScrollView {
+                VStack(spacing: 16) {
+                    ForEach(AppearanceOption.allCases) { option in
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                selection = option
                             }
+                        } label: {
+                            HStack {
+                                // Icon
+                                Image(systemName: option.icon)
+                                    .foregroundColor(selection == option ? .uvAccent : .uvSecondaryText)
+                                    .font(.title3)
+                                    .frame(width: 30)
                                 
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(option.rawValue)
+                                        .font(.body)
+                                        .fontWeight(.medium)
+                                        .foregroundColor(.uvPrimaryText)
+                                    
+                                    Text(option.description)
+                                        .font(.caption)
+                                        .foregroundColor(.uvSecondaryText)
+                                }
+                                
+                                Spacer()
+                                
+                                if selection == option {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundColor(.uvAccent)
+                                        .font(.title3)
+                                }
+                            }
+                            .padding()
+                            .background(Color.uvCardBackground)
+                            .cornerRadius(12)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(selection == option ? Color.uvAccent : Color.clear, lineWidth: 2)
+                            )
                         }
                     }
                 }
-                .foregroundColor(.primary)
+                .padding()
             }
         }
         .navigationTitle("Appearance")
         .navigationBarTitleDisplayMode(.inline)
-        
     }
 }
 
 
-enum AppearanceOption : String, CaseIterable, Identifiable {
+enum AppearanceOption: String, CaseIterable, Identifiable, Codable {
     case system = "System"
-    case dark = "Dark"
     case light = "Light"
+    case dark = "Dark"
     
     var id: String {
         rawValue
     }
     
-    var shortLabel : String {
+    var shortLabel: String {
+        rawValue
+    }
+    
+    var icon: String {
         switch self {
-        case .system : return "System"
-        case .dark : return "Dark"
-        case .light : return "Light"
+        case .system:
+            return "circle.lefthalf.filled"
+        case .light:
+            return "sun.max.fill"
+        case .dark:
+            return "moon.fill"
         }
     }
     
-    
+    var description: String {
+        switch self {
+        case .system:
+            return "Match system settings"
+        case .light:
+            return "Light mode"
+        case .dark:
+            return "Dark mode"
+        }
+    }
 }
 
 

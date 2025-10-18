@@ -15,7 +15,7 @@ struct RootTabView: View {
             }
             
             Tab("Forecast", systemImage: "chart.xyaxis.line") {
-                Text("Forecast Page")
+                ForecastView()
             }
             
             Tab("Cities", systemImage: "map") {
