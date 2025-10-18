@@ -9,27 +9,58 @@ import SwiftUI
 
 struct LanguageView: View {
     
-    @Binding var selection : LanguageOption
+    @Binding var selection: LanguageOption
     
     var body: some View {
-        List{
-            Section{
-                ForEach(LanguageOption.allCases) { option in
-                    Button {
-                        selection = option
-                    }label: {
-                        HStack{
-                            Text(option.rawValue)
-                            Spacer()
-                            if selection == option {
-                                Image(systemName: "checkmark")
-                                    .font(.body.weight(.semibold))
+        ZStack {
+            // Background gradient
+            LinearGradient.uvBackground
+                .ignoresSafeArea()
+            
+            ScrollView {
+                VStack(spacing: 16) {
+                    ForEach(LanguageOption.allCases) { option in
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                selection = option
                             }
+                        } label: {
+                            HStack {
+                                // Flag emoji
+                                Text(option.flag)
+                                    .font(.title2)
+                                    .frame(width: 40)
+                                
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(option.rawValue)
+                                        .font(.body)
+                                        .fontWeight(.medium)
+                                        .foregroundColor(.uvPrimaryText)
+                                    
+                                    Text(option.nativeName)
+                                        .font(.caption)
+                                        .foregroundColor(.uvSecondaryText)
+                                }
+                                
+                                Spacer()
+                                
+                                if selection == option {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundColor(.uvAccent)
+                                        .font(.title3)
+                                }
+                            }
+                            .padding()
+                            .background(Color.uvCardBackground)
+                            .cornerRadius(12)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(selection == option ? Color.uvAccent : Color.clear, lineWidth: 2)
+                            )
                         }
                     }
-                    .foregroundColor(.primary)
-                    
                 }
+                .padding()
             }
         }
         .navigationTitle("Language")
@@ -37,7 +68,7 @@ struct LanguageView: View {
     }
 }
 
-enum LanguageOption : String, CaseIterable, Identifiable {
+enum LanguageOption: String, CaseIterable, Identifiable, Codable {
     case english = "English"
     case chinese = "Chinese"
     case burmese = "Burmese"
@@ -47,10 +78,28 @@ enum LanguageOption : String, CaseIterable, Identifiable {
     }
     
     var shortLabel: String {
+        rawValue
+    }
+    
+    var flag: String {
         switch self {
-        case .english : return "English"
-        case .burmese : return "Burmese"
-        case .chinese : return "Chinese"
+        case .english:
+            return "🇺🇸"
+        case .chinese:
+            return "🇨🇳"
+        case .burmese:
+            return "🇲🇲"
+        }
+    }
+    
+    var nativeName: String {
+        switch self {
+        case .english:
+            return "English"
+        case .chinese:
+            return "中文"
+        case .burmese:
+            return "မြန်မာ"
         }
     }
 }

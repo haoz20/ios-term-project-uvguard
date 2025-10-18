@@ -10,12 +10,17 @@ import Alamofire
 
 @Observable
 class UVIndexViewModel {
-    var currentUV: Int?
+    var currentUV: Double?
     var currentTimeRange: String?
     var errorMessage: String?
     var isLoading: Bool = false
     
+    var hourlyForecast: [(time: String, uv: Double)] = []
+    var timezone: String = "UTC"
+    
     private let apiBaseURL = "https://api.open-meteo.com/v1/forecast"
+    private let notificationManager = UVNotificationManager.shared
+    private let notificationSettings = NotificationSettings.shared
 
     init() {
         // Don't load mock data automatically - wait for API call
@@ -30,71 +35,85 @@ class UVIndexViewModel {
             "longitude": longitude,
             "hourly": "uv_index",
             "timezone": "auto", // This will use the location's timezone
-            "forecast_hours": 24   // Get data for today only
+            "forecast_hours": 24
         ]
         
         AF.request(apiBaseURL, parameters: parameters)
-            .validate(statusCode: 200..<300)
-            .responseDecodable(of: UVResponse.self) { [weak self] response in
+            .validate(statusCode: 200..<300).response { [weak self] response in
+                guard let self = self else { return }
+                
                 DispatchQueue.main.async {
-                    self?.isLoading = false
+                    self.isLoading = false
                     
                     switch response.result {
-                    case .success(let uvResponse):
-                        self?.processUVResponse(uvResponse)
-//                    case .failure(let error):
-//                        self?.handleAPIError(error)
-                    case .failure(_):
-                        print("Fail")
+                    case .success(let data):
+                        guard let data = data else {
+                            self.errorMessage = "No data received"
+                            return
+                        }
+                        
+                        do {
+                            let decoder = JSONDecoder()
+                            let uv = try decoder.decode(UVResponse.self, from: data)
+                            self.processUVResponse(uv)
+                        } catch {
+                            self.errorMessage = "Failed to parse data: \(error.localizedDescription)"
+                        }
+                        
+                    case .failure(let error):
+                        self.errorMessage = error.localizedDescription
                     }
                 }
             }
     }
     
     private func processUVResponse(_ response: UVResponse) {
-        findCurrentUV(from: response)
-    }
-    
-//    private func handleAPIError(_ error: AFError) {
-//        if let statusCode = error.responseCode {
-//            switch statusCode {
-//            case 400:
-//                errorMessage = "Invalid location coordinates"
-//            case 429:
-//                errorMessage = "API rate limit exceeded. Please try again later."
-//            case 500...599:
-//                errorMessage = "Server error. Please try again later."
-//            default:
-//                errorMessage = "Network error: \(statusCode)"
-//            }
-//        } else if error.isNetworkError {
-//            errorMessage = "No internet connection"
-//        } else {
-//            errorMessage = "Failed to fetch UV data: \(error.localizedDescription)"
-//        }
-//    }
-    
-    
-    func loadMockData() {
-        guard let url = Bundle.main.url(forResource: "mock", withExtension: "json") else {
-            errorMessage = "Failed to find mock.json"
-            return
+        // Store timezone
+        self.timezone = response.timezone
+        
+        // Populate hourly forecast data
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
+        dateFormatter.timeZone = TimeZone(identifier: response.timezone) ?? TimeZone(identifier: "Asia/Bangkok")
+        
+        hourlyForecast = zip(response.hourly.time, response.hourly.uvIndex).compactMap { (timeString, uvIndex) in
+            guard let date = dateFormatter.date(from: timeString) else { return nil }
+            return (time: timeString, uv: uvIndex)
         }
         
-        do {
-            let data = try Data(contentsOf: url)
-            let decoder = JSONDecoder()
-            let uvResponse = try decoder.decode(UVResponse.self, from: data)
-            
-            findCurrentUV(from: uvResponse)
-            
-        } catch {
-            errorMessage = "Failed to load or parse mock.json: \(error.localizedDescription)"
+        findCurrentUV(from: response)
+        
+        // Schedule notifications if enabled
+        scheduleNotificationsIfNeeded()
+    }
+    
+    // MARK: - Notification Scheduling
+    
+    private func scheduleNotificationsIfNeeded() {
+        // Check if any notifications are enabled
+        let hasNotificationsEnabled = notificationSettings.dailyForecastEnabled || 
+                                      notificationSettings.thresholdNotificationsEnabled
+        
+        guard hasNotificationsEnabled else { return }
+        
+        // Schedule daily forecast notification
+        if notificationSettings.dailyForecastEnabled {
+            let calendar = Calendar.current
+            let hour = calendar.component(.hour, from: notificationSettings.dailyForecastTime)
+            notificationManager.scheduleDailyForecastNotification(at: hour, hourlyForecast: hourlyForecast)
+        }
+        
+        // Schedule threshold notifications
+        if notificationSettings.thresholdNotificationsEnabled {
+            notificationManager.scheduleUVThresholdNotifications(
+                threshold: Double(notificationSettings.uvThreshold), // Convert Int to Double
+                hourlyForecast: hourlyForecast,
+                timezone: timezone
+            )
         }
     }
     
     private func findCurrentUV(from response: UVResponse) {
-        
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
         // Use the timezone from the API response for dynamic location support
@@ -124,7 +143,7 @@ class UVIndexViewModel {
 
             if now >= date && now < nextDate {
                 print("✅ Found match! Current time \(now) is between \(date) and \(nextDate)")
-                self.currentUV = Int(response.hourly.uvIndex[index])
+                self.currentUV = response.hourly.uvIndex[index]
                 let timeFormat = DateFormatter()
                 timeFormat.dateFormat = "h a"
                 timeFormat.timeZone = dateFormatter.timeZone
@@ -137,5 +156,4 @@ class UVIndexViewModel {
         
         errorMessage = "Could not find current UV index for the current time."
     }
-    
 }
