@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+
 struct SettingsView: View {
     
     @State private var notificationSettings = NotificationSettings.shared
@@ -94,9 +95,9 @@ struct SettingsView: View {
             Divider()
                 .padding(.horizontal)
             
-            // Language Selection
-            NavigationLink {
-                LanguageView(selection: $settingsManager.language)
+            // Language Selection - Opens iOS App Settings
+            Button {
+                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
             } label: {
                 HStack {
                     Image(systemName: "globe")
@@ -108,10 +109,10 @@ struct SettingsView: View {
                     
                     Spacer()
                     
-                    Text(settingsManager.language.shortLabel)
+                    Text(currentLanguageDisplay)
                         .foregroundColor(.uvSecondaryText)
                     
-                    Image(systemName: "chevron.right")
+                    Image(systemName: "arrow.up.forward.square")
                         .foregroundColor(.uvSecondaryText)
                         .font(.caption)
                 }
@@ -164,6 +165,22 @@ struct SettingsView: View {
             return "sun.max.fill"
         case .dark:
             return "moon.fill"
+        }
+    }
+    
+    private var currentLanguageDisplay: String {
+        // Get the current app language from system
+        if let languageCode = Locale.current.language.languageCode?.identifier {
+            let locale = Locale(identifier: languageCode)
+            return locale.localizedString(forLanguageCode: languageCode)?.capitalized ?? "System"
+        }
+        return "System"
+    }
+    
+    // MARK: - Helper Methods
+    private func openAppSettings() {
+        if let url = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(url)
         }
     }
 }
