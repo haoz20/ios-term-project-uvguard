@@ -17,35 +17,36 @@ struct UVIndexView: View {
             // Warm background gradient
             LinearGradient.uvBackground
                 .ignoresSafeArea()
-            VStack {
-                if let location = locationDataManager.locationManager.location {
-                    CityHeaderView(location: location)
-                }
-                ScrollView {
-                    VStack(spacing: 24) {
-                        Group {
-                            if viewModel.isLoading {
-                                ProgressView("Fetching UV data...")
-                                    .font(.headline)
-                                    .frame(height: 300)
-                            } else if let uv = viewModel.currentUV {
-                                UVComponent(uvData: uv)
-                            } else if let errorMessage = viewModel.errorMessage {
-                                errorView(message: errorMessage)
-                            } else {
-                                waitingForLocationView()
-                            }
+            
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 24) {
+                    // Header - Use CityHeaderView
+                    if let location = locationDataManager.locationManager.location {
+                        CityHeaderView(location: location)
+                    }
+                    
+                    // Content
+                    Group {
+                        if viewModel.isLoading {
+                            ProgressView("Fetching UV data...")
+                                .font(.headline)
+                                .frame(height: 300)
+                        } else if let uv = viewModel.currentUV {
+                            UVComponent(uvData: uv)
+                        } else if let errorMessage = viewModel.errorMessage {
+                            errorView(message: errorMessage)
+                        } else {
+                            waitingForLocationView()
                         }
                     }
-                    .padding(.top, 20)
                 }
+                .padding()
             }
-            .padding(.horizontal)
-            .onAppear(perform: setupLocationAndFetchData)
-            .onChange(of: locationDataManager.authorizationStatus) { _, status in
-                if status == .authorizedWhenInUse {
-                    fetchUVData()
-                }
+        }
+        .onAppear(perform: setupLocationAndFetchData)
+        .onChange(of: locationDataManager.authorizationStatus) { _, status in
+            if status == .authorizedWhenInUse {
+                fetchUVData()
             }
         }
     }

@@ -29,8 +29,10 @@ struct ForecastView: View {
             
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 24) {
-                    // Header
-                    headerSection
+                    // Header - Only show for current location
+                    if useCurrentLocation, let location = locationDataManager.locationManager.location {
+                        CityHeaderView(location: location)
+                    }
                     
                     if viewModel.isLoading {
                         loadingView
@@ -52,7 +54,7 @@ struct ForecastView: View {
                 .padding(.bottom, 30)
             }
         }
-        .navigationTitle(city?.name ?? "UV Forecast")
+        .navigationTitle(useCurrentLocation ? "UV Forecast" : (city?.name ?? "UV Forecast"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if !useCurrentLocation {
@@ -74,31 +76,6 @@ struct ForecastView: View {
                 fetchForecastData()
             }
         }
-    }
-    
-    // MARK: - Header Section
-    private var headerSection: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 6) {
-                Text(city?.name ?? "Current Location")
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .uvPrimaryText()
-                
-                HStack(spacing: 6) {
-                    Image(systemName: useCurrentLocation ? "location.fill" : "mappin.circle.fill")
-                        .font(.caption)
-                        .foregroundColor(.uvAccent)
-                    
-                    Text(city?.country ?? "My Location")
-                        .font(.subheadline)
-                        .uvSecondaryText()
-                }
-            }
-            
-            Spacer()
-        }
-        .padding(.top, 10)
     }
     
     // MARK: - 24-Hour Forecast Section
