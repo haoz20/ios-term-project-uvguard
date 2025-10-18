@@ -14,6 +14,9 @@ struct UVGuardApp: App {
     init() {
         // Configure notification center to show notifications when app is in foreground
         UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
+        
+        // Initialize settings manager to load saved preferences
+        _ = SettingsManager.shared
     }
     
     var body: some Scene {
