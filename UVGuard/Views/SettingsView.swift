@@ -21,14 +21,8 @@ struct SettingsView: View {
                 
                 ScrollView {
                     VStack(spacing: 20) {
-                        // MARK: - UV Notifications Section
-                        notificationSection
-                        
-                        // MARK: - General Settings Section
-                        generalSettingsSection
-                        
-                        // MARK: - Appearance Section
-                        appearanceSection
+                        // MARK: - Settings Card
+                        settingsCard
                     }
                     .padding()
                 }
@@ -38,41 +32,27 @@ struct SettingsView: View {
         }
     }
     
-    // MARK: - Notification Section
-    private var notificationSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Image(systemName: "bell.badge.fill")
-                    .foregroundColor(isNotificationsEnabled ? .uvAccent : .uvSecondaryText)
-                    .font(.title3)
-                
-                Text("Notifications")
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                    .uvPrimaryText()
-                
-                Spacer()
-            }
-            
+    // MARK: - Settings Card
+    private var settingsCard: some View {
+        VStack(spacing: 0) {
+            // UV Notifications
             NavigationLink {
                 NotificationSettingsView()
             } label: {
                 HStack {
-                    VStack(alignment: .leading, spacing: 4) {
+                    Image(systemName: "bell.badge.fill")
+                        .foregroundColor(.uvAccent)
+                        .frame(width: 24)
+                    
+                    VStack(alignment: .leading, spacing: 2) {
                         Text("UV Notifications")
                             .font(.body)
                             .fontWeight(.medium)
                             .foregroundColor(.uvPrimaryText)
                         
-                        if isNotificationsEnabled {
-                            Text("Enabled")
-                                .font(.caption)
-                                .foregroundColor(.uvSecondaryText)
-                        } else {
-                            Text("Disabled")
-                                .font(.caption)
-                                .foregroundColor(.uvSecondaryText)
-                        }
+                        Text(isNotificationsEnabled ? "Enabled" : "Disabled")
+                            .font(.caption)
+                            .foregroundColor(.uvSecondaryText)
                     }
                     
                     Spacer()
@@ -80,7 +60,7 @@ struct SettingsView: View {
                     if isNotificationsEnabled {
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundColor(.uvAccent)
-                            .font(.body)
+                            .font(.caption)
                     }
                     
                     Image(systemName: "chevron.right")
@@ -89,97 +69,60 @@ struct SettingsView: View {
                 }
                 .padding()
                 .background(Color.uvCardBackground)
-                .cornerRadius(12)
-            }
-        }
-        .padding()
-        .modifier(UVCardModifier())
-    }
-    
-    // MARK: - General Settings Section
-    private var generalSettingsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Image(systemName: "gear")
-                    .foregroundColor(.uvAccent)
-                    .font(.title3)
-                
-                Text("General")
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                    .uvPrimaryText()
-                
-                Spacer()
             }
             
-            VStack(spacing: 0) {
-                // 24-hour Time Toggle
+            Divider()
+                .padding(.horizontal)
+            
+            // 24-hour Time Toggle
+            HStack {
+                Image(systemName: "clock.fill")
+                    .foregroundColor(.uvAccent)
+                    .frame(width: 24)
+                
+                Text("24-hour Time")
+                    .foregroundColor(.uvPrimaryText)
+                
+                Spacer()
+                
+                Toggle("", isOn: $settingsManager.is24HourTime)
+                    .tint(.uvAccent)
+            }
+            .padding()
+            .background(Color.uvCardBackground)
+            
+            Divider()
+                .padding(.horizontal)
+            
+            // Language Selection
+            NavigationLink {
+                LanguageView(selection: $settingsManager.language)
+            } label: {
                 HStack {
-                    Image(systemName: "clock.fill")
+                    Image(systemName: "globe")
                         .foregroundColor(.uvAccent)
                         .frame(width: 24)
                     
-                    Text("24-hour Time")
-                        .uvPrimaryText()
+                    Text("Language")
+                        .foregroundColor(.uvPrimaryText)
                     
                     Spacer()
                     
-                    Toggle("", isOn: $settingsManager.is24HourTime)
-                        .tint(.uvAccent)
+                    Text(settingsManager.language.shortLabel)
+                        .foregroundColor(.uvSecondaryText)
+                    
+                    Image(systemName: "chevron.right")
+                        .foregroundColor(.uvSecondaryText)
+                        .font(.caption)
                 }
                 .padding()
                 .background(Color.uvCardBackground)
-                
-                Divider()
-                    .padding(.horizontal)
-                
-                // Language Selection
-                NavigationLink {
-                    LanguageView(selection: $settingsManager.language)
-                } label: {
-                    HStack {
-                        Image(systemName: "globe")
-                            .foregroundColor(.uvAccent)
-                            .frame(width: 24)
-                        
-                        Text("Language")
-                            .foregroundColor(.uvPrimaryText)
-                        
-                        Spacer()
-                        
-                        Text(settingsManager.language.shortLabel)
-                            .foregroundColor(.uvSecondaryText)
-                        
-                        Image(systemName: "chevron.right")
-                            .foregroundColor(.uvSecondaryText)
-                            .font(.caption)
-                    }
-                    .padding()
-                    .background(Color.uvCardBackground)
-                }
-            }
-            .cornerRadius(12)
-        }
-        .padding()
-        .modifier(UVCardModifier())
-    }
-    
-    // MARK: - Appearance Section
-    private var appearanceSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Image(systemName: "paintbrush.fill")
-                    .foregroundColor(.uvAccent)
-                    .font(.title3)
-                
-                Text("Appearance")
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                    .uvPrimaryText()
-                
-                Spacer()
             }
             
+            Divider()
+                .padding(.horizontal)
+            
+            // Theme/Appearance
             NavigationLink {
                 AppearanceView(selection: $settingsManager.appearance)
             } label: {
@@ -188,7 +131,7 @@ struct SettingsView: View {
                         .foregroundColor(.uvAccent)
                         .frame(width: 24)
                     
-                    Text("Theme")
+                    Text("Appearance")
                         .foregroundColor(.uvPrimaryText)
                     
                     Spacer()
@@ -202,10 +145,9 @@ struct SettingsView: View {
                 }
                 .padding()
                 .background(Color.uvCardBackground)
-                .cornerRadius(12)
             }
         }
-        .padding()
+        .cornerRadius(12)
         .modifier(UVCardModifier())
     }
     
@@ -224,10 +166,6 @@ struct SettingsView: View {
             return "moon.fill"
         }
     }
-}
-
-#Preview {
-    SettingsView()
 }
 
 #Preview {
