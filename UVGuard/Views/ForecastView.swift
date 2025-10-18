@@ -2,94 +2,458 @@
 //  ForecastView.swift
 //  UVGuard
 //
-//  Created by Swan Htet Aung on 4/9/25.
+//  Complete forecast view with 24-hour and 7-day forecasts
 //
 
 import SwiftUI
+import CoreLocation
+import Charts
 
 struct ForecastView: View {
+    let city: CityModel?
+    let useCurrentLocation: Bool
+    
     @StateObject private var locationDataManager = LocationDataManager()
-    @State private var viewModel = UVIndexViewModel()
+    @State private var viewModel = ForecastViewModel()
+    @Environment(\.dismiss) private var dismiss
+    
+    init(city: CityModel? = nil) {
+        self.city = city
+        self.useCurrentLocation = city == nil
+    }
     
     var body: some View {
         ZStack {
-            // Warm background gradient
             LinearGradient.uvBackground
                 .ignoresSafeArea()
             
-            ScrollView(.vertical, showsIndicators: false) {
+            ScrollView(showsIndicators: false) {
                 VStack(spacing: 24) {
-                    // Header Section
+                    // Header
                     headerSection
                     
                     if viewModel.isLoading {
                         loadingView
-                    } else if !viewModel.hourlyForecast.isEmpty {
-                        // 24-Hour Forecast Section
-                        hourlyForecastSection
-                        
-                        // Statistics Section
-                        statisticsSection
-                        
-                        // Recommendations Section
-                        recommendationsSection
-                        
-                    } else if let errorMessage = viewModel.errorMessage {
-                        errorView(message: errorMessage)
+                    } else if let error = viewModel.errorMessage {
+                        errorView(message: error)
                     } else {
-                        emptyStateView
+                        // 24-Hour Forecast Section
+                        if !viewModel.hourlyForecasts.isEmpty {
+                            hourlyForecastSection
+                        }
+                        
+                        // 7-Day Forecast Section
+                        if !viewModel.dailyForecasts.isEmpty {
+                            dailyForecastSection
+                        }
                     }
                 }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 100)
+                .padding()
+                .padding(.bottom, 30)
+            }
+        }
+        .navigationTitle(city?.name ?? "UV Forecast")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if !useCurrentLocation {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundColor(.uvSecondaryText)
+                    }
+                }
             }
         }
         .onAppear {
-            setupLocationAndFetchData()
+            fetchForecastData()
         }
         .onChange(of: locationDataManager.authorizationStatus) { _, status in
-            if status == .authorizedWhenInUse {
-                fetchUVData()
+            if status == .authorizedWhenInUse && useCurrentLocation {
+                fetchForecastData()
             }
         }
     }
     
     // MARK: - Header Section
     private var headerSection: some View {
-        VStack(spacing: 12) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("UV Forecast")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .uvPrimaryText()
-                    
-                    if let location = locationDataManager.locationManager.location {
-                        HStack {
-                            Image(systemName: "location.fill")
-                                .foregroundColor(.uvAccent)
-                            Text(getCurrentLocationName())
-                                .font(.subheadline)
-                                .uvSecondaryText()
-                        }
-                    }
-                }
+        HStack {
+            VStack(alignment: .leading, spacing: 6) {
+                Text(city?.name ?? "Current Location")
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .uvPrimaryText()
                 
-                Spacer()
-                
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text(Date().formatted(.dateTime.weekday(.wide)))
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                        .uvPrimaryText()
+                HStack(spacing: 6) {
+                    Image(systemName: useCurrentLocation ? "location.fill" : "mappin.circle.fill")
+                        .font(.caption)
+                        .foregroundColor(.uvAccent)
                     
-                    Text(Date().formatted(.dateTime.month().day().year()))
+                    Text(city?.country ?? "My Location")
                         .font(.subheadline)
                         .uvSecondaryText()
                 }
             }
+            
+            Spacer()
         }
-        .padding(.top, 20)
+        .padding(.top, 10)
+    }
+    
+    // MARK: - 24-Hour Forecast Section
+    @State private var selectedHourIndex: Int = 0
+    @State private var selectedHourDate: Date?
+    
+    private var selectedForecast: HourlyUVForecast {
+        viewModel.hourlyForecasts[safe: selectedHourIndex] ?? viewModel.hourlyForecasts.first!
+    }
+    
+    private var hourlyForecastSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            // Header
+            HStack {
+                Image(systemName: "clock.fill")
+                    .foregroundColor(.uvAccent)
+                    .font(.title3)
+                
+                Text("24-Hour Forecast")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .uvPrimaryText()
+                
+                Spacer()
+                
+                // Now indicator
+                HStack(spacing: 4) {
+                    Circle()
+                        .fill(Color.uvAccent)
+                        .frame(width: 8, height: 8)
+                    Text("Now")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .uvPrimaryText()
+                }
+            }
+            
+            // SwiftUI Chart - without card
+            if !viewModel.hourlyForecasts.isEmpty {
+                VStack(spacing: 8) {
+                    // Selected value display
+                    if let selectedDate = selectedHourDate,
+                       let selectedForecast = viewModel.hourlyForecasts.first(where: { Calendar.current.isDate($0.date, equalTo: selectedDate, toGranularity: .hour) }) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(selectedForecast.hour)
+                                    .font(.caption)
+                                    .uvSecondaryText()
+                                HStack(spacing: 8) {
+                                    Text("UV: \(Int(round(selectedForecast.uv)))")
+                                        .font(.title3)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(getUVColor(selectedForecast.uv))
+                                    Text(getUVDescription(selectedForecast.uv))
+                                        .font(.subheadline)
+                                        .uvSecondaryText()
+                                }
+                            }
+                            Spacer()
+                        }
+                        .padding(.horizontal)
+                    }
+                    
+                    Chart {
+                        ForEach(Array(viewModel.hourlyForecasts.enumerated()), id: \.element.id) { index, forecast in
+                            // Area gradient
+                            AreaMark(
+                                x: .value("Time", forecast.date),
+                                y: .value("UV", forecast.uv)
+                            )
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: [
+                                        Color.uvAccent.opacity(0.3),
+                                        Color.uvAccent.opacity(0.1),
+                                        Color.uvAccent.opacity(0.0)
+                                    ],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                            
+                            // Line
+                            LineMark(
+                                x: .value("Time", forecast.date),
+                                y: .value("UV", forecast.uv)
+                            )
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: [Color.uvAccent, Color.uvOrangeHighlight],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+                            
+                            // Points with color based on UV level
+                            PointMark(
+                                x: .value("Time", forecast.date),
+                                y: .value("UV", forecast.uv)
+                            )
+                            .foregroundStyle(getUVColor(forecast.uv))
+                            .symbolSize(60)
+                            
+                            // "Now" rule mark for the first point
+                            if index == 0 {
+                                RuleMark(x: .value("Now", forecast.date))
+                                    .foregroundStyle(Color.uvAccent)
+                                    .lineStyle(StrokeStyle(lineWidth: 2, dash: [5, 3]))
+                                    .annotation(position: .top, alignment: .center) {
+                                        Text("NOW")
+                                            .font(.caption2)
+                                            .fontWeight(.bold)
+                                            .foregroundColor(.uvAccent)
+                                            .padding(.horizontal, 8)
+                                            .padding(.vertical, 4)
+                                            .background(Color.uvCardBackground)
+                                            .cornerRadius(8)
+                                    }
+                            }
+                        }
+                        
+                        // Selection indicator
+                        if let selectedDate = selectedHourDate {
+                            RuleMark(x: .value("Selection", selectedDate))
+                                .foregroundStyle(Color.white.opacity(0.5))
+                                .lineStyle(StrokeStyle(lineWidth: 2))
+                                .annotation(position: .top, alignment: .center, spacing: 0) {
+                                    ZStack {
+                                        Circle()
+                                            .fill(Color.white)
+                                            .frame(width: 12, height: 12)
+                                        Circle()
+                                            .fill(Color.uvAccent)
+                                            .frame(width: 8, height: 8)
+                                    }
+                                }
+                        }
+                    }
+                    .chartXSelection(value: $selectedHourDate)
+                    .chartXAxis {
+                        AxisMarks(values: .stride(by: .hour, count: 3)) { value in
+                            if let date = value.as(Date.self) {
+                                AxisValueLabel {
+                                    VStack(spacing: 2) {
+                                        Text(date, format: .dateTime.hour())
+                                            .font(.caption2)
+                                            .uvSecondaryText()
+                                    }
+                                }
+                                AxisGridLine()
+                                    .foregroundStyle(Color.uvSecondaryText.opacity(0.2))
+                            }
+                        }
+                    }
+                    .chartYAxis {
+                        AxisMarks(position: .leading) { value in
+                            AxisValueLabel {
+                                if let intValue = value.as(Int.self) {
+                                    Text("\(intValue)")
+                                        .font(.caption2)
+                                        .uvSecondaryText()
+                                }
+                            }
+                            AxisGridLine()
+                                .foregroundStyle(Color.uvSecondaryText.opacity(0.1))
+                        }
+                    }
+                    .chartYScale(domain: 0...11)
+                    .frame(height: 200)
+                    .padding()
+                }
+            }
+            
+            // Hourly items scroll - inside card
+            VStack(alignment: .leading, spacing: 0) {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        ForEach(Array(viewModel.hourlyForecasts.enumerated()), id: \.element.id) { index, forecast in
+                            HourlyForecastCard(forecast: forecast, isNow: index == 0)
+                        }
+                    }
+                }
+            }
+            .padding()
+            .modifier(UVCardModifier())
+        }
+    }
+    
+    // MARK: - 7-Day Forecast Section
+    @State private var selectedDayDate: Date?
+    
+    private var dailyForecastSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                
+                Text("7-Day Forecast")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .uvPrimaryText()
+                
+                Spacer()
+            }
+            
+            // SwiftUI Chart - without card
+            if !viewModel.dailyForecasts.isEmpty {
+                VStack(spacing: 8) {
+                    // Selected value display
+                    if let selectedDate = selectedDayDate,
+                       let selectedForecast = viewModel.dailyForecasts.first(where: { Calendar.current.isDate($0.date, equalTo: selectedDate, toGranularity: .day) }) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(selectedForecast.dayName)
+                                    .font(.caption)
+                                    .uvSecondaryText()
+                                HStack(spacing: 8) {
+                                    Text("Max UV: \(Int(round(selectedForecast.maxUV)))")
+                                        .font(.title3)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(getUVColor(selectedForecast.maxUV))
+                                    Text(getUVDescription(selectedForecast.maxUV))
+                                        .font(.subheadline)
+                                        .uvSecondaryText()
+                                }
+                            }
+                            Spacer()
+                        }
+                        .padding(.horizontal)
+                    }
+                    
+                    Chart {
+                        ForEach(viewModel.dailyForecasts) { forecast in
+                            // Area gradient
+                            AreaMark(
+                                x: .value("Day", forecast.date),
+                                y: .value("UV", forecast.maxUV)
+                            )
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: [
+                                        Color.uvOrangeHighlight.opacity(0.3),
+                                        Color.uvOrangeHighlight.opacity(0.1),
+                                        Color.uvOrangeHighlight.opacity(0.0)
+                                    ],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                            
+                            // Line
+                            LineMark(
+                                x: .value("Day", forecast.date),
+                                y: .value("UV", forecast.maxUV)
+                            )
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: [Color.uvAccent, Color.uvOrangeHighlight],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+                            
+                            // Points with color based on UV level
+                            PointMark(
+                                x: .value("Day", forecast.date),
+                                y: .value("UV", forecast.maxUV)
+                            )
+                            .foregroundStyle(getUVColor(forecast.maxUV))
+                            .symbolSize(60)
+                        }
+                        
+                        // Selection indicator
+                        if let selectedDate = selectedDayDate {
+                            RuleMark(x: .value("Selection", selectedDate))
+                                .foregroundStyle(Color.white.opacity(0.5))
+                                .lineStyle(StrokeStyle(lineWidth: 2))
+                                .annotation(position: .top, alignment: .center, spacing: 0) {
+                                    ZStack {
+                                        Circle()
+                                            .fill(Color.white)
+                                            .frame(width: 12, height: 12)
+                                        Circle()
+                                            .fill(Color.uvAccent)
+                                            .frame(width: 8, height: 8)
+                                    }
+                                }
+                        }
+                    }
+                    .chartXSelection(value: $selectedDayDate)
+                    .chartXAxis {
+                        AxisMarks(values: .automatic) { value in
+                            if let date = value.as(Date.self) {
+                                AxisValueLabel {
+                                    VStack(spacing: 2) {
+                                        Text(date, format: .dateTime.weekday(.abbreviated))
+                                            .font(.caption)
+                                            .fontWeight(.medium)
+                                            .uvPrimaryText()
+                                    }
+                                }
+                                AxisGridLine()
+                                    .foregroundStyle(Color.uvSecondaryText.opacity(0.2))
+                            }
+                        }
+                    }
+                    .chartYAxis {
+                        AxisMarks(position: .leading) { value in
+                            AxisValueLabel {
+                                if let intValue = value.as(Int.self) {
+                                    Text("\(intValue)")
+                                        .font(.caption2)
+                                        .uvSecondaryText()
+                                }
+                            }
+                            AxisGridLine()
+                                .foregroundStyle(Color.uvSecondaryText.opacity(0.1))
+                        }
+                    }
+                    .chartYScale(domain: 0...11)
+                    .frame(height: 200)
+                    .padding()
+                }
+            }
+            
+            // Daily items list - inside card
+            VStack(spacing: 12) {
+                ForEach(viewModel.dailyForecasts) { forecast in
+                    DailyForecastRow(forecast: forecast)
+                }
+            }
+            .padding()
+            .modifier(UVCardModifier())
+        }
+    }
+    
+    // MARK: - Helper Methods
+    private func getUVColor(_ uv: Double) -> Color {
+        switch uv {
+        case 0..<3: return .green
+        case 3..<6: return .uvAccent
+        case 6..<8: return .uvOrangeHighlight
+        case 8..<11: return .uvDanger
+        default: return .purple
+        }
+    }
+    
+    private func getUVDescription(_ uv: Double) -> String {
+        switch uv {
+        case 0..<3: return "Low"
+        case 3..<6: return "Moderate"
+        case 6..<8: return "High"
+        case 8..<11: return "Very High"
+        default: return "Extreme"
+        }
     }
     
     // MARK: - Loading View
@@ -99,7 +463,7 @@ struct ForecastView: View {
                 .scaleEffect(1.5)
                 .tint(.uvAccent)
             
-            Text("Loading UV forecast...")
+            Text("Loading forecast...")
                 .font(.headline)
                 .uvSecondaryText()
         }
@@ -108,278 +472,199 @@ struct ForecastView: View {
         .modifier(UVCardModifier())
     }
     
-    // MARK: - Hourly Forecast Section
-    private var hourlyForecastSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                Text("24-Hour Forecast")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .uvPrimaryText()
-                
-                Spacer()
-                
-                Text("\(viewModel.hourlyForecast.count) hours")
-                    .font(.caption)
-                    .uvSecondaryText()
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(Color.uvCardBackground.opacity(0.5))
-                    .cornerRadius(12)
-            }
-            
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    ForEach(Array(viewModel.hourlyForecast.enumerated()), id: \.offset) { index, forecast in
-                        if let date = parseDate(from: forecast.time) {
-                            HourlyComponent(date: date, uvIndex: forecast.uv)
-                        }
-                    }
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-            }
-        }
-        .padding()
-        .modifier(UVCardModifier())
-    }
-    
-    // MARK: - Statistics Section
-    private var statisticsSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Today's Overview")
-                .font(.title2)
-                .fontWeight(.bold)
-                .uvPrimaryText()
-            
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 16) {
-                statisticCard(
-                    title: "Peak UV",
-                    value: String(format: "%.1f", getMaxUV()),
-                    icon: "sun.max.fill",
-                    color: getColorForUV(getMaxUV())
-                )
-                
-                statisticCard(
-                    title: "UV Hours",
-                    value: "\(getUVHours())",
-                    icon: "clock.fill",
-                    color: .uvAccent
-                )
-                
-                statisticCard(
-                    title: "Safe Hours",
-                    value: "\(getSafeHours())",
-                    icon: "shield.fill",
-                    color: .green
-                )
-                
-                statisticCard(
-                    title: "Danger Hours",
-                    value: "\(getDangerHours())",
-                    icon: "exclamationmark.triangle.fill",
-                    color: .uvDanger
-                )
-            }
-        }
-        .padding()
-        .modifier(UVCardModifier())
-    }
-    
-    // MARK: - Recommendations Section
-    private var recommendationsSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Recommendations")
-                .font(.title2)
-                .fontWeight(.bold)
-                .uvPrimaryText()
-            
-            VStack(spacing: 12) {
-                ForEach(getRecommendations(), id: \.0) { recommendation in
-                    recommendationRow(
-                        icon: recommendation.0,
-                        title: recommendation.1,
-                        description: recommendation.2,
-                        color: recommendation.3
-                    )
-                }
-            }
-        }
-        .padding()
-        .modifier(UVCardModifier())
-    }
-    
-    // MARK: - Helper Views
-    private func statisticCard(title: String, value: String, icon: String, color: Color) -> some View {
-        VStack(spacing: 8) {
-            HStack {
-                Image(systemName: icon)
-                    .foregroundColor(color)
-                    .font(.title3)
-                
-                Spacer()
-            }
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(value)
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .uvPrimaryText()
-                
-                Text(title)
-                    .font(.caption)
-                    .uvSecondaryText()
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .padding()
-        .background(Color.uvCardBackground.opacity(0.5))
-        .cornerRadius(12)
-    }
-    
-    private func recommendationRow(icon: String, title: String, description: String, color: Color) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .foregroundColor(color)
-                .font(.title3)
-                .frame(width: 24)
-            
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .uvPrimaryText()
-                
-                Text(description)
-                    .font(.caption)
-                    .uvSecondaryText()
-            }
-            
-            Spacer()
-        }
-        .padding()
-        .background(Color.uvCardBackground.opacity(0.5))
-        .cornerRadius(12)
-    }
-    
+    // MARK: - Error View
     private func errorView(message: String) -> some View {
         VStack(spacing: 16) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 50))
                 .foregroundColor(.uvDanger)
             
-            Text(message)
+            Text("Unable to load forecast")
                 .font(.headline)
+                .uvPrimaryText()
+            
+            Text(message)
+                .font(.subheadline)
                 .multilineTextAlignment(.center)
                 .uvSecondaryText()
             
             Button("Retry") {
-                fetchUVData()
+                fetchForecastData()
             }
-            .buttonStyle(UVDangerButtonStyle())
+            .buttonStyle(UVPrimaryButtonStyle())
         }
         .padding(40)
         .modifier(UVCardModifier())
     }
     
-    private var emptyStateView: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "sun.max")
-                .font(.system(size: 50))
-                .foregroundColor(.uvAccent)
+    // MARK: - Data Fetching
+    private func fetchForecastData() {
+        if useCurrentLocation {
+            if let location = locationDataManager.locationManager.location {
+                viewModel.fetchForecast(
+                    latitude: location.coordinate.latitude,
+                    longitude: location.coordinate.longitude
+                )
+            } else if locationDataManager.authorizationStatus == .notDetermined {
+                locationDataManager.locationManager.requestWhenInUseAuthorization()
+            }
+        } else if let city = city {
+            viewModel.fetchForecast(
+                latitude: city.latitude,
+                longitude: city.longitude
+            )
+        }
+    }
+}
+
+// MARK: - Hourly Forecast Card
+struct HourlyForecastCard: View {
+    let forecast: HourlyUVForecast
+    let isNow: Bool
+    
+    var body: some View {
+        VStack(spacing: 10) {
+            // Show "Now" label for first item, otherwise show time
+            if isNow {
+                HStack(spacing: 4) {
+                    Circle()
+                        .fill(Color.uvAccent)
+                        .frame(width: 6, height: 6)
+                    Text("Now")
+                        .font(.caption)
+                        .fontWeight(.bold)
+                        .foregroundColor(.uvAccent)
+                }
+            } else {
+                Text(forecast.hour)
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .uvSecondaryText()
+            }
             
-            Text("No forecast data available")
-                .font(.headline)
-                .uvPrimaryText()
+            ZStack {
+                Circle()
+                    .fill(uvColor.opacity(0.2))
+                    .frame(width: 50, height: 50)
+                
+                // Highlight "now" circle with a border
+                if isNow {
+                    Circle()
+                        .stroke(Color.uvAccent, lineWidth: 2)
+                        .frame(width: 50, height: 50)
+                }
+                
+                Text("\(Int(round(forecast.uv)))")
+                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                    .foregroundColor(uvColor)
+            }
             
-            Text("Pull to refresh or check your location settings")
-                .font(.subheadline)
+            Text(uvDescription)
+                .font(.caption2)
+                .fontWeight(.medium)
                 .uvSecondaryText()
-                .multilineTextAlignment(.center)
         }
-        .padding(40)
-        .modifier(UVCardModifier())
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.uvCardBackground.opacity(isNow ? 0.8 : 0.5))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(isNow ? Color.uvAccent.opacity(0.3) : Color.clear, lineWidth: 1)
+                )
+        )
     }
     
-    // MARK: - Helper Functions
-    private func parseDate(from timeString: String) -> Date? {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
-        return dateFormatter.date(from: timeString)
-    }
-    
-    private func getCurrentLocationName() -> String {
-        // This would need to be implemented with reverse geocoding
-        return "Current Location"
-    }
-    
-    private func getMaxUV() -> Double {
-        return viewModel.hourlyForecast.map { $0.uv }.max() ?? 0.0
-    }
-    
-    private func getUVHours() -> Int {
-        return viewModel.hourlyForecast.filter { $0.uv > 0.5 }.count
-    }
-    
-    private func getSafeHours() -> Int {
-        return viewModel.hourlyForecast.filter { $0.uv < 3.0 }.count
-    }
-    
-    private func getDangerHours() -> Int {
-        return viewModel.hourlyForecast.filter { $0.uv >= 8.0 }.count
-    }
-    
-    private func getColorForUV(_ uv: Double) -> Color {
-        switch uv {
+    private var uvColor: Color {
+        switch forecast.uv {
         case 0..<3: return .green
-        case 3..<6: return .yellow
-        case 6..<8: return .orange
-        case 8..<11: return .red
+        case 3..<6: return .uvAccent
+        case 6..<8: return .uvOrangeHighlight
+        case 8..<11: return .uvDanger
         default: return .purple
         }
     }
     
-    private func getRecommendations() -> [(String, String, String, Color)] {
-        let maxUV = getMaxUV()
-        var recommendations: [(String, String, String, Color)] = []
-        
-        if maxUV >= 8 {
-            recommendations.append(("sun.max.fill", "Avoid Sun Exposure", "UV levels are extreme today. Stay indoors during peak hours.", .red))
-        } else if maxUV >= 6 {
-            recommendations.append(("sunglasses.fill", "Use Protection", "Wear sunscreen, hat, and sunglasses.", .orange))
-        } else if maxUV >= 3 {
-            recommendations.append(("sun.haze.fill", "Moderate Protection", "Some protection recommended during midday.", .yellow))
-        } else {
-            recommendations.append(("checkmark.circle.fill", "Minimal Risk", "Low UV levels today. Minimal protection needed.", .green))
-        }
-        
-        recommendations.append(("drop.fill", "Stay Hydrated", "Drink plenty of water, especially outdoors.", .blue))
-        recommendations.append(("timer", "Check Regularly", "UV levels change throughout the day.", .purple))
-        
-        return recommendations
-    }
-    
-    private func setupLocationAndFetchData() {
-        if locationDataManager.authorizationStatus == .authorizedWhenInUse {
-            fetchUVData()
-        } else {
-            locationDataManager.locationManager.requestWhenInUseAuthorization()
+    private var uvDescription: String {
+        switch forecast.uv {
+        case 0..<3: return "Low"
+        case 3..<6: return "Moderate"
+        case 6..<8: return "High"
+        case 8..<11: return "Very High"
+        default: return "Extreme"
         }
     }
+}
+
+// MARK: - Daily Forecast Row
+struct DailyForecastRow: View {
+    let forecast: DailyUVForecast
     
-    private func fetchUVData() {
-        guard let location = locationDataManager.locationManager.location else {
-            viewModel.errorMessage = "Unable to get current location. Please ensure location services are enabled."
-            return
+    var body: some View {
+        HStack {
+            // Day and Date
+            VStack(alignment: .leading, spacing: 2) {
+                Text(forecast.dayName)
+                    .font(.headline)
+                    .uvPrimaryText()
+                
+                Text(forecast.dateString)
+                    .font(.caption)
+                    .uvSecondaryText()
+            }
+            .frame(width: 80, alignment: .leading)
+            
+            Spacer()
+            
+            // UV Bar indicator
+            HStack(spacing: 4) {
+                ForEach(0..<11, id: \.self) { index in
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(index < Int(round(forecast.maxUV)) ? uvColor : Color.uvSecondaryText.opacity(0.2))
+                        .frame(width: 8, height: 20)
+                }
+            }
+            
+            Spacer()
+            
+            // Max UV
+            HStack(spacing: 6) {
+                Image(systemName: "sun.max.fill")
+                    .font(.caption)
+                    .foregroundColor(uvColor)
+                
+                Text("\(Int(round(forecast.maxUV)))")
+                    .font(.title3)
+                    .fontWeight(.bold)
+                    .foregroundColor(uvColor)
+            }
+            .frame(width: 60, alignment: .trailing)
         }
-        
-        viewModel.fetchUVData(
-            latitude: location.coordinate.latitude,
-            longitude: location.coordinate.longitude
-        )
+        .padding()
+        .background(Color.uvCardBackground.opacity(0.3))
+        .cornerRadius(12)
+    }
+    
+    private var uvColor: Color {
+        switch forecast.maxUV {
+        case 0..<3: return .green
+        case 3..<6: return .uvAccent
+        case 6..<8: return .uvOrangeHighlight
+        case 8..<11: return .uvDanger
+        default: return .purple
+        }
+    }
+}
+
+// MARK: - Collection Extension for Safe Indexing
+extension Collection {
+    subscript(safe index: Index) -> Element? {
+        return indices.contains(index) ? self[index] : nil
     }
 }
 
 #Preview {
-    ForecastView()
+    NavigationStack {
+        ForecastView()
+    }
 }

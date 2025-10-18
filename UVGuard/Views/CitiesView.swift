@@ -11,6 +11,8 @@ struct CitiesView: View {
     
     @State private var showAddCity = false
     @State private var cities: [CityModel] = []
+    @State private var selectedCity: CityModel?
+    @State private var showForecast = false
     
     var body: some View {
         NavigationStack {
@@ -26,14 +28,20 @@ struct CitiesView: View {
                         ScrollView {
                             LazyVStack(spacing: 16) {
                                 ForEach(cities) { city in
-                                    CityCard(city: city)
-                                        .contextMenu {
-                                            Button(role: .destructive) {
-                                                deleteCity(city)
-                                            } label: {
-                                                Label("Delete", systemImage: "trash")
-                                            }
+                                    Button {
+                                        selectedCity = city
+                                        showForecast = true
+                                    } label: {
+                                        CityCard(city: city)
+                                    }
+                                    .buttonStyle(.plain)
+                                    .contextMenu {
+                                        Button(role: .destructive) {
+                                            deleteCity(city)
+                                        } label: {
+                                            Label("Delete", systemImage: "trash")
                                         }
+                                    }
                                 }
                             }
                             .padding(.horizontal, 16)
@@ -59,6 +67,13 @@ struct CitiesView: View {
                 SearchCityView(saveCity: { city in
                     addCity(city)
                 })
+            }
+            .sheet(isPresented: $showForecast) {
+                if let city = selectedCity {
+                    NavigationStack {
+                        ForecastView(city: city)
+                    }
+                }
             }
             .onAppear {
                 loadCities()
