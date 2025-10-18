@@ -16,7 +16,6 @@ class SettingsManager {
     private enum Keys {
         static let appearance = "appearance"
         static let is24HourTime = "is24HourTime"
-        static let language = "language"
     }
     
     // MARK: - Settings Properties
@@ -33,12 +32,6 @@ class SettingsManager {
         }
     }
     
-    var language: LanguageOption {
-        didSet {
-            UserDefaults.standard.set(language.rawValue, forKey: Keys.language)
-        }
-    }
-    
     // MARK: - Initialization
     private init() {
         // Load appearance
@@ -51,14 +44,6 @@ class SettingsManager {
         
         // Load 24-hour time preference
         self.is24HourTime = UserDefaults.standard.bool(forKey: Keys.is24HourTime)
-        
-        // Load language
-        if let savedLanguage = UserDefaults.standard.string(forKey: Keys.language),
-           let language = LanguageOption(rawValue: savedLanguage) {
-            self.language = language
-        } else {
-            self.language = .english
-        }
         
         // Apply the saved appearance on init
         applyAppearance()
@@ -87,6 +72,5 @@ class SettingsManager {
     func resetToDefaults() {
         appearance = .system
         is24HourTime = false
-        language = .english
     }
 }
