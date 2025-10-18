@@ -24,36 +24,40 @@ struct UVProvider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (UVEntry) -> ()) {
-        let entry = UVEntry(
-            date: Date(),
-            currentUV: 5.5,
-            hourlyForecast: [
-                ("12PM", 5.5),
-                ("1PM", 6.2),
-                ("2PM", 7.1),
-                ("3PM", 6.8)
-            ]
-        )
+        // Load real data for snapshot
+        let entry = loadWidgetData()
         completion(entry)
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<UVEntry>) -> ()) {
-        Task {
-            // In production, fetch real UV data from API
-            let currentDate = Date()
-            let entry = await fetchUVData(for: currentDate)
-            
-            // Update every hour
-            let nextUpdate = Calendar.current.date(byAdding: .hour, value: 1, to: currentDate)!
-            let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
-            completion(timeline)
-        }
+        // Load data from SharedDataManager
+        let currentDate = Date()
+        let entry = loadWidgetData()
+        
+        // Update every 30 minutes
+        let nextUpdate = Calendar.current.date(byAdding: .minute, value: 30, to: currentDate)!
+        let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
+        completion(timeline)
     }
     
-    // MARK: - Data Fetching
+    // MARK: - Load Data from App
+    private func loadWidgetData() -> UVEntry {
+        let sharedData = SharedDataManager.shared
+        
+        let currentUV = sharedData.getCurrentUV()
+        let forecast = sharedData.getHourlyForecast()
+        let lastUpdate = sharedData.getLastUpdate()
+        
+        return UVEntry(
+            date: lastUpdate,
+            currentUV: currentUV,
+            hourlyForecast: forecast
+        )
+    }
+    
+    // MARK: - Fallback Mock Data (if needed)
     private func fetchUVData(for date: Date) async -> UVEntry {
-        // TODO: Implement actual API call to fetch UV data
-        // For now, return mock data
+        // Fallback to mock data if SharedDataManager has no data
         let calendar = Calendar.current
         let hour = calendar.component(.hour, from: date)
         

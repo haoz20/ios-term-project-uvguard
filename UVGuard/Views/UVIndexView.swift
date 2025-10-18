@@ -65,6 +65,16 @@ struct UVIndexView: View {
             return
         }
         
+        // Reverse geocode to get city name
+        let geocoder = CLGeocoder()
+        geocoder.reverseGeocodeLocation(location) { placemarks, error in
+            if let placemark = placemarks?.first {
+                let city = placemark.locality ?? "Unknown"
+                let country = placemark.country ?? ""
+                SharedDataManager.shared.saveLocation(city: city, country: country)
+            }
+        }
+        
         viewModel.fetchUVData(
             latitude: location.coordinate.latitude,
             longitude: location.coordinate.longitude

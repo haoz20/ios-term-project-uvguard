@@ -56,13 +56,6 @@ struct CurrentUVWidgetView: View {
         }
         .padding(12)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(
-            LinearGradient(
-                colors: [Color.uvSoftYellow, Color.uvLightCream],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        )
     }
 }
 
@@ -74,9 +67,22 @@ struct CurrentUVWidget: Widget {
         StaticConfiguration(kind: kind, provider: UVProvider()) { entry in
             if #available(iOS 17.0, *) {
                 CurrentUVWidgetView(entry: entry)
-                    .containerBackground(Color.uvSoftYellow, for: .widget)
+                    .containerBackground(for: .widget) {
+                        LinearGradient(
+                            colors: [Color.uvSoftYellow, Color.uvLightCream],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    }
             } else {
                 CurrentUVWidgetView(entry: entry)
+                    .background(
+                        LinearGradient(
+                            colors: [Color.uvSoftYellow, Color.uvLightCream],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
             }
         }
         .configurationDisplayName("Current UV Index")

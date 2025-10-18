@@ -83,13 +83,6 @@ struct ForecastWidgetView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(14)
-        .background(
-            LinearGradient(
-                colors: [Color.uvSoftYellow, Color.uvLightCream],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        )
     }
 }
 
@@ -101,9 +94,22 @@ struct ForecastWidget: Widget {
         StaticConfiguration(kind: kind, provider: UVProvider()) { entry in
             if #available(iOS 17.0, *) {
                 ForecastWidgetView(entry: entry)
-                    .containerBackground(Color.uvSoftYellow, for: .widget)
+                    .containerBackground(for: .widget) {
+                        LinearGradient(
+                            colors: [Color.uvSoftYellow, Color.uvLightCream],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    }
             } else {
                 ForecastWidgetView(entry: entry)
+                    .background(
+                        LinearGradient(
+                            colors: [Color.uvSoftYellow, Color.uvLightCream],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
             }
         }
         .configurationDisplayName("UV Forecast")
