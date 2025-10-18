@@ -14,40 +14,44 @@ struct CitiesView: View {
     
     var body: some View {
         NavigationStack {
-            Group {
-                if cities.isEmpty {
-                    ContentUnavailableView(
-                        "No Cities Added",
-                        systemImage: "location.slash",
-                        description: Text("Add cities to see UV index information for multiple locations.")
-                    )
-                } else {
-                    List {
-                        ForEach(cities) { city in
-                            VStack(alignment: .leading) {
-                                Text(city.name).font(.headline)
-                                if let country = city.country, !country.isEmpty {
-                                    Text(country).font(.caption).foregroundColor(.secondary)
+            ZStack {
+                // Warm background gradient
+                LinearGradient.uvBackground
+                    .ignoresSafeArea()
+                
+                Group {
+                    if cities.isEmpty {
+                        emptyStateView
+                    } else {
+                        ScrollView {
+                            LazyVStack(spacing: 16) {
+                                ForEach(cities) { city in
+                                    CityCard(city: city)
+                                        .contextMenu {
+                                            Button(role: .destructive) {
+                                                deleteCity(city)
+                                            } label: {
+                                                Label("Delete", systemImage: "trash")
+                                            }
+                                        }
                                 }
                             }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 20)
                         }
-                        .onDelete(perform: deleteCities)
                     }
-                    .listStyle(.plain)
                 }
             }
             .navigationTitle("Cities")
             .navigationBarTitleDisplayMode(.inline)
-            .frame(maxWidth: .infinity)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         showAddCity = true
                     } label: {
-                        HStack {
-                            Image(systemName: "plus.app")
-                        }
-                        
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundColor(.uvAccent)
+                            .font(.title3)
                     }
                 }
             }
@@ -60,9 +64,40 @@ struct CitiesView: View {
                 loadCities()
             }
         }
-        
-        
-        
+    }
+    
+    // MARK: - Empty State View
+    private var emptyStateView: some View {
+        VStack(spacing: 20) {
+            Image(systemName: "location.slash.fill")
+                .font(.system(size: 60))
+                .foregroundColor(.uvAccent)
+            
+            Text("No Cities Added")
+                .font(.title2)
+                .fontWeight(.bold)
+                .uvPrimaryText()
+            
+            Text("Add cities to see UV index information for multiple locations.")
+                .font(.body)
+                .multilineTextAlignment(.center)
+                .uvSecondaryText()
+                .padding(.horizontal, 40)
+            
+            Button {
+                showAddCity = true
+            } label: {
+                HStack {
+                    Image(systemName: "plus.circle.fill")
+                    Text("Add Your First City")
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(UVPrimaryButtonStyle())
+            .padding(.horizontal, 40)
+            .padding(.top, 10)
+        }
+        .frame(maxHeight: .infinity)
     }
     
     private func loadCities() {
@@ -91,6 +126,11 @@ struct CitiesView: View {
         if !cities.contains(where: { $0.id == city.id }) {
             cities.append(city)
         }
+        saveCities()
+    }
+    
+    private func deleteCity(_ city: CityModel) {
+        cities.removeAll { $0.id == city.id }
         saveCities()
     }
     
