@@ -116,12 +116,14 @@ struct CitiesView: View {
     }
     
     private func loadCities() {
-        if let data = UserDefaults.standard.object(forKey: "favorite-cities") as? Data {
+        // Use App Groups for Watch app sync
+        let defaults = UserDefaults(suiteName: "group.com.swanhtetaung.uvguard") ?? .standard
+        if let data = defaults.object(forKey: "favorite-cities") as? Data {
             do {
                 let savedCities = try JSONDecoder().decode([CityModel].self, from: data)
                 cities = savedCities
             } catch {
-                
+                print("Error loading cities: \(error)")
             }
         }
     }
@@ -130,9 +132,12 @@ struct CitiesView: View {
         do {
             let encoder = JSONEncoder()
             let saveCities = try encoder.encode(cities)
-            UserDefaults.standard.set(saveCities, forKey: "favorite-cities")
+            // Use App Groups for Watch app sync
+            let defaults = UserDefaults(suiteName: "group.com.swanhtetaung.uvguard") ?? .standard
+            defaults.set(saveCities, forKey: "favorite-cities")
+            defaults.synchronize()
         } catch {
-            
+            print("Error saving cities: \(error)")
         }
     }
     

@@ -20,28 +20,17 @@ class UVIndexViewModel {
     }
     
     func loadData() {
-        isLoading = true
-        errorMessage = nil
+        let sharedData = SharedDataManager.shared
         
-        // Load from SharedDataManager
-        let uv = SharedDataManager.shared.getCurrentUV()
-        currentUV = uv
+        self.currentUV = sharedData.getCurrentUV()
+        let locationData = sharedData.getLocation()
         
-        let locationData = SharedDataManager.shared.getLocation()
-        let city = locationData.city
-        let country = locationData.country
-        
-        if !city.isEmpty {
-            if !country.isEmpty {
-                location = "\(city), \(country)"
-            } else {
-                location = city
-            }
+        if let city = locationData.city {
+            self.location = city
         } else {
-            location = "Unknown Location"
+            self.location = "Unknown Location"
+            self.errorMessage = "No data available. Please open the iPhone app first."
         }
-        
-        isLoading = false
     }
     
     func refresh() {
