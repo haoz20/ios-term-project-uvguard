@@ -5,15 +5,12 @@ struct HourlyComponent: View {
     let uvIndex: Double
     
     private var timeString: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm"
-        
         let calendar = Calendar.current
         if calendar.isDate(date, equalTo: Date(), toGranularity: .hour) {
             return "Now"
         }
         
-        return formatter.string(from: date)
+        return date.formattedTime()
     }
     
     private var uvLevel: UVLevel {

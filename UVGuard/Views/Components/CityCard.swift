@@ -142,8 +142,7 @@ struct CityCard: View {
     }
     
     private func updateTime() {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "h:mm a"
+        let formatter = DateFormatter.timeFormatter()
         
         if let timezone = city.timeZone,
            let tz = TimeZone(identifier: timezone) {

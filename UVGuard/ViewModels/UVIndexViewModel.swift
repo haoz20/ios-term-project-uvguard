@@ -126,8 +126,7 @@ class UVIndexViewModel {
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
         dateFormatter.timeZone = TimeZone(identifier: timezone) ?? TimeZone.current
         
-        let hourFormatter = DateFormatter()
-        hourFormatter.dateFormat = "ha" // e.g., "12PM", "1PM"
+        let hourFormatter = DateFormatter.hourFormatter()
         hourFormatter.timeZone = TimeZone(identifier: timezone) ?? TimeZone.current
         
         // Get current time in the location's timezone

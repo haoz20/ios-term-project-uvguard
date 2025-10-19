@@ -95,8 +95,7 @@ class ForecastViewModel {
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
         dateFormatter.timeZone = timeZone
         
-        let timeFormatter = DateFormatter()
-        timeFormatter.dateFormat = "h a"
+        let timeFormatter = DateFormatter.hourFormatter()
         timeFormatter.timeZone = timeZone
         
         let now = Date()

@@ -81,8 +81,16 @@ struct SettingsView: View {
                     .foregroundColor(.uvAccent)
                     .frame(width: 24)
                 
-                Text("24-hour Time")
-                    .foregroundColor(.uvPrimaryText)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("24-hour Time")
+                        .font(.uvBody)
+                        .fontWeight(.medium)
+                        .foregroundColor(.uvPrimaryText)
+                    
+                    Text(settingsManager.is24HourTime ? "14:30" : "2:30 PM")
+                        .font(.uvCaption)
+                        .foregroundColor(.uvSecondaryText)
+                }
                 
                 Spacer()
                 
