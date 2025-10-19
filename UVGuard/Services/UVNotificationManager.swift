@@ -18,8 +18,10 @@ class UVNotificationManager {
     private let center = UNUserNotificationCenter.current()
     
     // Notification identifiers
-    private let dailyForecastIdentifier = "daily-uv-forecast"
-    private let uvThresholdIdentifierPrefix = "uv-threshold-"
+    private let morningBriefingIdentifier = "morning-uv-briefing"
+    private let eveningBriefingIdentifier = "evening-uv-briefing"
+    private let dailyForecastIdentifier = "daily-uv-forecast" // Deprecated
+    private let uvThresholdIdentifierPrefix = "uv-threshold-" // Deprecated
     
     private init() {
         checkAuthorizationStatus()
@@ -48,7 +50,151 @@ class UVNotificationManager {
         }
     }
     
-    // MARK: - Schedule Daily Forecast Summary
+    // MARK: - Schedule Smart UV Briefings
+    
+    /// Schedules morning briefing if today's UV exceeds threshold
+    /// - Parameters:
+    ///   - time: Time to send the morning briefing
+    ///   - todayForecast: Today's hourly UV data
+    ///   - threshold: UV threshold to trigger notification
+    func scheduleMorningBriefing(at time: Date, todayForecast: [(time: String, uv: Double)], threshold: Double) {
+        // Remove existing morning briefing
+        center.removePendingNotificationRequests(withIdentifiers: [morningBriefingIdentifier])
+        
+        guard !todayForecast.isEmpty else { return }
+        
+        // Calculate today's peak UV
+        let peakUV = todayForecast.map { $0.uv }.max() ?? 0.0
+        
+        // Only schedule if peak UV exceeds threshold
+        guard peakUV >= threshold else {
+            print("⏭️ Morning briefing skipped: Today's peak UV (\(String(format: "%.1f", peakUV))) below threshold (\(String(format: "%.0f", threshold)))")
+            return
+        }
+        
+        let uvLevel = getUVLevel(for: peakUV)
+        
+        // Find peak time range
+        let peakTimeRange = findPeakTimeRange(forecast: todayForecast, peakUV: peakUV)
+        
+        // Create notification content
+        let content = UNMutableNotificationContent()
+        content.title = "☀️ Today's UV Briefing"
+        content.body = "Today: peak UV \(String(format: "%.0f", peakUV)) (\(uvLevel.description)) \(peakTimeRange). \(getProtectionAdvice(for: uvLevel))"
+        content.sound = .default
+        content.badge = 1
+        
+        content.userInfo = [
+            "type": "morning-briefing",
+            "peakUV": peakUV,
+            "threshold": threshold
+        ]
+        
+        // Schedule for specified time daily in user's local time zone
+        var components = Calendar.current.dateComponents([.hour, .minute], from: time)
+        components.timeZone = TimeZone.current
+        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
+        let request = UNNotificationRequest(identifier: morningBriefingIdentifier, content: content, trigger: trigger)
+        
+        center.add(request) { error in
+            if let error = error {
+                print("Error scheduling morning briefing: \(error)")
+            } else {
+                print("✅ Morning briefing scheduled for \(components.hour ?? 0):\(String(format: "%02d", components.minute ?? 0)) \(TimeZone.current.identifier)")
+            }
+        }
+    }
+    
+    /// Schedules evening briefing if tomorrow's UV exceeds threshold
+    /// - Parameters:
+    ///   - time: Time to send the evening briefing
+    ///   - tomorrowForecast: Tomorrow's hourly UV data
+    ///   - threshold: UV threshold to trigger notification
+    func scheduleEveningBriefing(at time: Date, tomorrowForecast: [(time: String, uv: Double)], threshold: Double) {
+        // Remove existing evening briefing
+        center.removePendingNotificationRequests(withIdentifiers: [eveningBriefingIdentifier])
+        
+        guard !tomorrowForecast.isEmpty else { return }
+        
+        // Calculate tomorrow's peak UV
+        let peakUV = tomorrowForecast.map { $0.uv }.max() ?? 0.0
+        
+        // Only schedule if peak UV exceeds threshold
+        guard peakUV >= threshold else {
+            print("⏭️ Evening briefing skipped: Tomorrow's peak UV (\(String(format: "%.1f", peakUV))) below threshold (\(String(format: "%.0f", threshold)))")
+            return
+        }
+        
+        let uvLevel = getUVLevel(for: peakUV)
+        
+        // Find peak time range
+        let peakTimeRange = findPeakTimeRange(forecast: tomorrowForecast, peakUV: peakUV)
+        
+        // Create notification content
+        let content = UNMutableNotificationContent()
+        content.title = "🌙 Tomorrow's UV Briefing"
+        content.body = "Tomorrow: peak UV \(String(format: "%.0f", peakUV)) (\(uvLevel.description)) \(peakTimeRange). \(getProtectionAdvice(for: uvLevel))"
+        content.sound = .default
+        content.badge = 1
+        
+        content.userInfo = [
+            "type": "evening-briefing",
+            "peakUV": peakUV,
+            "threshold": threshold
+        ]
+        
+        // Schedule for specified time daily in user's local time zone
+        var components = Calendar.current.dateComponents([.hour, .minute], from: time)
+        components.timeZone = TimeZone.current
+        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
+        let request = UNNotificationRequest(identifier: eveningBriefingIdentifier, content: content, trigger: trigger)
+        
+        center.add(request) { error in
+            if let error = error {
+                print("Error scheduling evening briefing: \(error)")
+            } else {
+                print("✅ Evening briefing scheduled for \(components.hour ?? 0):\(String(format: "%02d", components.minute ?? 0)) \(TimeZone.current.identifier)")
+            }
+        }
+    }
+    
+    private func findPeakTimeRange(forecast: [(time: String, uv: Double)], peakUV: Double) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
+        
+        let timeFormatter = DateFormatter.timeFormatter()
+        
+        // Find all hours within 90% of peak UV
+        let peakHours = forecast.filter { $0.uv >= peakUV * 0.9 }
+        
+        guard !peakHours.isEmpty,
+              let firstTime = dateFormatter.date(from: peakHours.first?.time ?? ""),
+              let lastTime = dateFormatter.date(from: peakHours.last?.time ?? "") else {
+            return ""
+        }
+        
+        let startTime = timeFormatter.string(from: firstTime)
+        let endTime = timeFormatter.string(from: lastTime.addingTimeInterval(60 * 60)) // Add 1 hour
+        
+        return "\(startTime)–\(endTime)"
+    }
+    
+    private func getProtectionAdvice(for level: UVLevel) -> String {
+        switch level {
+        case .low:
+            return "Minimal protection needed."
+        case .moderate:
+            return "Wear sunglasses on bright days."
+        case .high:
+            return "Hat & SPF 30+ recommended."
+        case .veryHigh:
+            return "Hat & SPF 50 recommended."
+        case .extreme:
+            return "Avoid sun exposure. SPF 50+ essential."
+        }
+    }
+    
+    // MARK: - Schedule Daily Forecast Summary (Deprecated)
     
     /// Schedules a daily morning notification with UV forecast summary
     /// - Parameters:
@@ -77,10 +223,11 @@ class UVNotificationManager {
             "peakUV": peakUV
         ]
         
-        // Schedule for specified hour daily
+        // Schedule for specified hour daily in user's local time zone
         var dateComponents = DateComponents()
         dateComponents.hour = hour
         dateComponents.minute = 0
+        dateComponents.timeZone = TimeZone.current
         
         let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
         let request = UNNotificationRequest(identifier: dailyForecastIdentifier, content: content, trigger: trigger)
@@ -89,7 +236,7 @@ class UVNotificationManager {
             if let error = error {
                 print("Error scheduling daily forecast: \(error)")
             } else {
-                print("✅ Daily forecast scheduled for \(hour):00")
+                print("✅ Daily forecast scheduled for \(hour):00 \(TimeZone.current.identifier)")
             }
         }
     }
@@ -159,6 +306,16 @@ class UVNotificationManager {
     }
     
     // MARK: - Remove Notifications
+    
+    func removeMorningBriefing() {
+        center.removePendingNotificationRequests(withIdentifiers: [morningBriefingIdentifier])
+        print("🗑️ Removed morning briefing")
+    }
+    
+    func removeEveningBriefing() {
+        center.removePendingNotificationRequests(withIdentifiers: [eveningBriefingIdentifier])
+        print("🗑️ Removed evening briefing")
+    }
     
     func removeThresholdNotifications() {
         center.getPendingNotificationRequests { requests in
