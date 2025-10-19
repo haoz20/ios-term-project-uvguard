@@ -21,17 +21,17 @@ struct SearchCityView: View {
                                 .scaleEffect(1.5)
                                 .tint(.uvAccent)
                             Text("Searching…")
-                                .font(.headline)
+                                .font(.uvHeadline)
                                 .uvSecondaryText()
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                     } else if let msg = vm.errorMessage {
                         VStack(spacing: 16) {
                             Image(systemName: "exclamationmark.triangle.fill")
-                                .font(.system(size: 50))
+                                .font(.montserratBold(50))
                                 .foregroundColor(.uvDanger)
                             Text("Something went wrong")
-                                .font(.headline)
+                                .font(.uvHeadline)
                                 .uvPrimaryText()
                             Text(msg)
                                 .uvSecondaryText()
@@ -42,10 +42,10 @@ struct SearchCityView: View {
                     } else if vm.results.isEmpty, !text.isEmpty {
                         VStack(spacing: 16) {
                             Image(systemName: "magnifyingglass")
-                                .font(.system(size: 50))
+                                .font(.montserratBold(50))
                                 .foregroundColor(.uvAccent)
                             Text("No Results")
-                                .font(.headline)
+                                .font(.uvHeadline)
                                 .uvPrimaryText()
                             Text("Try a different keyword.")
                                 .uvSecondaryText()
@@ -62,14 +62,14 @@ struct SearchCityView: View {
                                         HStack {
                                             VStack(alignment: .leading, spacing: 6) {
                                                 Text(city.name)
-                                                    .font(.headline)
+                                                    .font(.uvHeadline)
                                                     .uvPrimaryText()
                                                 
                                                 HStack(spacing: 8) {
                                                     if let country = city.country, !country.isEmpty {
                                                         HStack(spacing: 4) {
                                                             Image(systemName: "location.fill")
-                                                                .font(.caption2)
+                                                                .font(.uvCaption2)
                                                                 .foregroundColor(.uvAccent)
                                                             Text(country)
                                                         }
@@ -77,20 +77,20 @@ struct SearchCityView: View {
                                                     if let timeZone = city.timeZone, !timeZone.isEmpty, timeZone != city.country {
                                                         HStack(spacing: 4) {
                                                             Image(systemName: "clock.fill")
-                                                                .font(.caption2)
+                                                                .font(.uvCaption2)
                                                                 .foregroundColor(.uvAccent)
                                                             Text(timeZone)
                                                         }
                                                     }
                                                 }
-                                                .font(.caption)
+                                                .font(.uvCaption)
                                                 .uvSecondaryText()
                                             }
                                             
                                             Spacer()
                                             
                                             Image(systemName: "chevron.right")
-                                                .font(.caption)
+                                                .font(.uvCaption)
                                                 .foregroundColor(.uvAccent)
                                         }
                                         .padding()

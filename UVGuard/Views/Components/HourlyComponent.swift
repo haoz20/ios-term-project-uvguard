@@ -50,7 +50,7 @@ struct HourlyComponent: View {
         VStack(spacing: 10) {
             // Time Display
             Text(timeString)
-                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                .font(.montserratSemiBold(13))
                 .uvPrimaryText()
             
             // UV Index Circle
@@ -64,13 +64,13 @@ struct HourlyComponent: View {
                     .frame(width: 45, height: 45)
                 
                 Text(String(format: "%.0f", uvIndex))
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
+                    .font(.montserratBold(13))
                     .foregroundColor(uvColor)
             }
             
             // UV Category
             Text(uvDescription)
-                .font(.system(size: 9, weight: .medium))
+                .font(.montserratMedium(9))
                 .uvSecondaryText()
                 .lineLimit(1)
         }

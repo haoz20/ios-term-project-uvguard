@@ -57,10 +57,10 @@ struct NotificationSettingsView: View {
             HStack {
                 Image(systemName: "bell.fill")
                     .foregroundColor(.uvAccent)
-                    .font(.title2)
+                    .font(.uvTitle2)
                 
                 Text("Notification Status")
-                    .font(.title2)
+                    .font(.uvTitle2)
                     .fontWeight(.bold)
                     .uvPrimaryText()
                 
@@ -72,11 +72,11 @@ struct NotificationSettingsView: View {
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(authorizationStatusText)
-                        .font(.headline)
+                        .font(.uvHeadline)
                         .uvPrimaryText()
                     
                     Text(authorizationStatusDescription)
-                        .font(.caption)
+                        .font(.uvCaption)
                         .uvSecondaryText()
                 }
                 

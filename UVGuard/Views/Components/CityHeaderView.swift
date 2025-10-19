@@ -11,7 +11,7 @@ struct CityHeaderView: View {
                 Image(systemName: "location.fill")
                     .foregroundColor(.uvAccent)
                 Text(placemark?.locality ?? "Loading...")
-                    .font(.headline)
+                    .font(.uvHeadline)
                     .fontWeight(.bold)
                     .uvPrimaryText()
             }
@@ -19,7 +19,7 @@ struct CityHeaderView: View {
             Spacer()
             VStack(alignment: .trailing) {
                 Text(Date().formatted(.dateTime.month().day()))
-                    .font(.headline)
+                    .font(.uvHeadline)
                     .uvSecondaryText()
                 Text(Date().formatted(.dateTime.hour().minute()))
                     .uvSecondaryText()

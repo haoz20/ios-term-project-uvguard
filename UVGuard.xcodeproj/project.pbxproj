@@ -9,6 +9,14 @@
 /* Begin PBXBuildFile section */
 		4405A5EC2E5DF3680039C2FF /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 4405A5EB2E5DF3680039C2FF /* Alamofire */; };
 		4487A9DB2EA4A8AD002D7485 /* WatchUVGuard Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 4487A9D12EA4A8AB002D7485 /* WatchUVGuard Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		4487AC612EA4F2C0002D7485 /* Montserrat-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4487AC5D2EA4F2C0002D7485 /* Montserrat-Bold.ttf */; };
+		4487AC622EA4F2C0002D7485 /* Montserrat-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4487AC5E2EA4F2C0002D7485 /* Montserrat-Medium.ttf */; };
+		4487AC632EA4F2C0002D7485 /* Montserrat-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4487AC5F2EA4F2C0002D7485 /* Montserrat-Regular.ttf */; };
+		4487AC642EA4F2C0002D7485 /* Montserrat-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4487AC602EA4F2C0002D7485 /* Montserrat-SemiBold.ttf */; };
+		4487AC652EA4F2C0002D7485 /* Montserrat-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4487AC5D2EA4F2C0002D7485 /* Montserrat-Bold.ttf */; };
+		4487AC662EA4F2C0002D7485 /* Montserrat-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4487AC5E2EA4F2C0002D7485 /* Montserrat-Medium.ttf */; };
+		4487AC672EA4F2C0002D7485 /* Montserrat-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4487AC5F2EA4F2C0002D7485 /* Montserrat-Regular.ttf */; };
+		4487AC682EA4F2C0002D7485 /* Montserrat-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4487AC602EA4F2C0002D7485 /* Montserrat-SemiBold.ttf */; };
 		44BBFC572EA3DA2F003C6F2B /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44BBFC562EA3DA2F003C6F2B /* WidgetKit.framework */; };
 		44BBFC592EA3DA2F003C6F2B /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44BBFC582EA3DA2F003C6F2B /* SwiftUI.framework */; };
 		44BBFC642EA3DA31003C6F2B /* UVGuardWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 44BBFC542EA3DA2F003C6F2B /* UVGuardWidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -58,6 +66,10 @@
 
 /* Begin PBXFileReference section */
 		4487A9D12EA4A8AB002D7485 /* WatchUVGuard Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WatchUVGuard Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4487AC5D2EA4F2C0002D7485 /* Montserrat-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Bold.ttf"; sourceTree = "<group>"; };
+		4487AC5E2EA4F2C0002D7485 /* Montserrat-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Medium.ttf"; sourceTree = "<group>"; };
+		4487AC5F2EA4F2C0002D7485 /* Montserrat-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Regular.ttf"; sourceTree = "<group>"; };
+		4487AC602EA4F2C0002D7485 /* Montserrat-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-SemiBold.ttf"; sourceTree = "<group>"; };
 		44BBFC542EA3DA2F003C6F2B /* UVGuardWidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = UVGuardWidgetsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		44BBFC562EA3DA2F003C6F2B /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		44BBFC582EA3DA2F003C6F2B /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -76,6 +88,13 @@
 				Theme/UVGuardTheme.swift,
 			);
 			target = 4487A9D02EA4A8AB002D7485 /* WatchUVGuard Watch App */;
+		};
+		4487AC6A2EA4F2E0002D7485 /* Exceptions for "UVGuard" folder in "UVGuard" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 44BD5DA12E5639CF002CA787 /* UVGuard */;
 		};
 		44BBFC682EA3DA31003C6F2B /* Exceptions for "UVGuardWidgets" folder in "UVGuardWidgetsExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -103,6 +122,7 @@
 		44BD5DA42E5639CF002CA787 /* UVGuard */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
+				4487AC6A2EA4F2E0002D7485 /* Exceptions for "UVGuard" folder in "UVGuard" target */,
 				4487A9EA2EA4B0E9002D7485 /* Exceptions for "UVGuard" folder in "WatchUVGuard Watch App" target */,
 			);
 			path = UVGuard;
@@ -156,6 +176,10 @@
 				4487A9D22EA4A8AB002D7485 /* WatchUVGuard Watch App */,
 				44BBFC552EA3DA2F003C6F2B /* Frameworks */,
 				44BD5DA32E5639CF002CA787 /* Products */,
+				4487AC5D2EA4F2C0002D7485 /* Montserrat-Bold.ttf */,
+				4487AC5E2EA4F2C0002D7485 /* Montserrat-Medium.ttf */,
+				4487AC5F2EA4F2C0002D7485 /* Montserrat-Regular.ttf */,
+				4487AC602EA4F2C0002D7485 /* Montserrat-SemiBold.ttf */,
 			);
 			sourceTree = "<group>";
 		};
@@ -295,6 +319,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4487AC612EA4F2C0002D7485 /* Montserrat-Bold.ttf in Resources */,
+				4487AC622EA4F2C0002D7485 /* Montserrat-Medium.ttf in Resources */,
+				4487AC632EA4F2C0002D7485 /* Montserrat-Regular.ttf in Resources */,
+				4487AC642EA4F2C0002D7485 /* Montserrat-SemiBold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -309,6 +337,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4487AC652EA4F2C0002D7485 /* Montserrat-Bold.ttf in Resources */,
+				4487AC662EA4F2C0002D7485 /* Montserrat-Medium.ttf in Resources */,
+				4487AC672EA4F2C0002D7485 /* Montserrat-Regular.ttf in Resources */,
+				4487AC682EA4F2C0002D7485 /* Montserrat-SemiBold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -618,6 +650,7 @@
 				DEVELOPMENT_TEAM = 24P579BG6U;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = UVGuard/Info.plist;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "UVGuard needs your location to show the UV index where you are.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -648,6 +681,7 @@
 				DEVELOPMENT_TEAM = 24P579BG6U;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = UVGuard/Info.plist;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "UVGuard needs your location to show the UV index where you are.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

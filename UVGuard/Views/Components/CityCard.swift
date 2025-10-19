@@ -20,18 +20,18 @@ struct CityCard: View {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 6) {
                     Text(city.name)
-                        .font(.title2)
+                        .font(.uvTitle2)
                         .fontWeight(.bold)
                         .uvPrimaryText()
                     
                     HStack(spacing: 6) {
                         Image(systemName: "location.fill")
-                            .font(.caption2)
+                            .font(.uvCaption2)
                             .foregroundColor(.uvAccent)
                         
                         if let country = city.country {
                             Text(country)
-                                .font(.caption)
+                                .font(.uvCaption)
                                 .uvSecondaryText()
                         }
                     }
@@ -43,7 +43,7 @@ struct CityCard: View {
                 VStack(alignment: .trailing, spacing: 2) {
                     if let uv = viewModel.currentUV {
                         Text("\(Int(round(uv)))")
-                            .font(.system(size: 56, weight: .thin, design: .rounded))
+                            .font(.uvIndexMedium)
                             .foregroundColor(getUVColor(uv))
                             .scaleEffect(animationProgress)
                     } else if viewModel.isLoading {
@@ -53,7 +53,7 @@ struct CityCard: View {
                             .frame(width: 56, height: 56)
                     } else {
                         Text("--")
-                            .font(.system(size: 56, weight: .thin, design: .rounded))
+                            .font(.uvIndexMedium)
                             .uvSecondaryText()
                     }
                 }
@@ -74,11 +74,11 @@ struct CityCard: View {
                     HStack(spacing: 10) {
                         Image(systemName: "sun.max.fill")
                             .foregroundColor(getUVColor(uv))
-                            .font(.title3)
+                            .font(.uvTitle3)
                         
                         VStack(alignment: .leading, spacing: 2) {
                             Text(getUVDescription(uv))
-                                .font(.subheadline)
+                                .font(.uvSubheadline)
                                 .fontWeight(.semibold)
                                 .uvPrimaryText()
                             
@@ -89,9 +89,9 @@ struct CityCard: View {
                     HStack(spacing: 8) {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .foregroundColor(.uvDanger)
-                            .font(.caption)
+                            .font(.uvCaption)
                         Text("Unable to load")
-                            .font(.caption)
+                            .font(.uvCaption)
                             .uvSecondaryText()
                     }
                 }
@@ -101,11 +101,11 @@ struct CityCard: View {
                 // Local time with clock icon
                 HStack(spacing: 6) {
                     Image(systemName: "clock.fill")
-                        .font(.caption)
+                        .font(.uvCaption)
                         .foregroundColor(.uvAccent)
                     
                     Text(currentTime)
-                        .font(.subheadline)
+                        .font(.uvSubheadline)
                         .fontWeight(.medium)
                         .uvPrimaryText()
                 }
