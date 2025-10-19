@@ -177,61 +177,37 @@ struct NotificationSettingsView: View {
     
     // MARK: - Discrete Threshold Slider
     private var discreteThresholdSlider: some View {
-        let thresholdValues = [3, 4, 5, 6, 7, 8, 9, 10, 11]
-        
-        return GeometryReader { geometry in
-            let spacing = (geometry.size.width - 40) / CGFloat(thresholdValues.count - 1)
+        VStack(spacing: 8) {
+            // SwiftUI Slider with discrete steps
+            Slider(
+                value: Binding(
+                    get: { Double(settings.uvThreshold) },
+                    set: { settings.uvThreshold = Int($0.rounded()) }
+                ),
+                in: 3...11,
+                step: 1
+            )
+            .tint(.uvAccent)
             
-            ZStack(alignment: .leading) {
-                // Track
-                Rectangle()
-                    .fill(Color.uvSecondaryText.opacity(0.2))
-                    .frame(height: 4)
-                    .cornerRadius(2)
-                    .padding(.horizontal, 20)
-                
-                // Dots
-                HStack(spacing: 0) {
-                    ForEach(Array(thresholdValues.enumerated()), id: \.offset) { index, value in
+            // Value indicators below slider
+            HStack {
+                ForEach(3...11, id: \.self) { value in
+                    VStack(spacing: 4) {
+                        // Indicator dot
                         Circle()
-                            .fill(settings.uvThreshold == value ? Color.uvAccent : Color.uvSecondaryText.opacity(0.4))
-                            .frame(width: settings.uvThreshold == value ? 16 : 12, height: settings.uvThreshold == value ? 16 : 12)
-                            .overlay(
-                                Text("\(value)")
-                                    .font(.caption2)
-                                    .uvSecondaryText()
-                                    .offset(y: 20)
-                            )
-                            .onTapGesture {
-                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                    settings.uvThreshold = value
-                                }
-                            }
+                            .fill(settings.uvThreshold == value ? Color.uvAccent : Color.uvSecondaryText.opacity(0.3))
+                            .frame(width: settings.uvThreshold == value ? 8 : 6, height: settings.uvThreshold == value ? 8 : 6)
                         
-                        if index < thresholdValues.count - 1 {
-                            Spacer()
-                                .frame(width: spacing)
-                        }
+                        // Value label
+                        Text("\(value)")
+                            .font(.caption2)
+                            .fontWeight(settings.uvThreshold == value ? .bold : .regular)
+                            .foregroundColor(settings.uvThreshold == value ? .uvAccent : .uvSecondaryText)
                     }
+                    .frame(maxWidth: .infinity)
                 }
-                .padding(.horizontal, 20)
             }
         }
-        .frame(height: 50)
-        .gesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { value in
-                    let position = value.location.x - 20
-                    let totalWidth = UIScreen.main.bounds.width - 80
-                    let spacing = totalWidth / CGFloat(thresholdValues.count - 1)
-                    let index = Int(round(position / spacing))
-                    let clampedIndex = max(0, min(thresholdValues.count - 1, index))
-                    
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                        settings.uvThreshold = thresholdValues[clampedIndex]
-                    }
-                }
-        )
     }
     
     // MARK: - Preview Section
