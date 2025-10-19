@@ -29,6 +29,7 @@ class SettingsManager {
     var is24HourTime: Bool {
         didSet {
             UserDefaults.standard.set(is24HourTime, forKey: Keys.is24HourTime)
+            UserDefaults.standard.synchronize()
         }
     }
     

@@ -13,6 +13,7 @@ struct CityCard: View {
     @State private var currentTime: String = ""
     @State private var timer: Timer?
     @State private var animationProgress: CGFloat = 0
+    @State private var settingsManager = SettingsManager.shared
     
     var body: some View {
         VStack(spacing: 0) {
