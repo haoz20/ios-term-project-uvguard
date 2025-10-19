@@ -15,7 +15,6 @@ class WatchConnectivityManager: NSObject {
     
     var currentUV: Double?
     var location: (city: String, country: String)?
-    var cities: [CityModel] = []
     var hourlyForecast: [(hour: String, uv: Double)] = []
     var lastUpdateTime: Date?
     
@@ -105,18 +104,6 @@ extension WatchConnectivityManager: WCSessionDelegate {
                 self.location = (city, country)
                 SharedDataManager.shared.saveLocation(city: city, country: country)
                 print("⌚ Context location: \(city), \(country)")
-            }
-            
-            // Cities
-            if let citiesData = applicationContext["cities"] as? Data,
-               let decodedCities = try? JSONDecoder().decode([CityModel].self, from: citiesData) {
-                self.cities = decodedCities
-                
-                // Save to UserDefaults
-                let defaults = UserDefaults(suiteName: "group.com.swanhtetaung.uvguard") ?? .standard
-                defaults.set(citiesData, forKey: "favorite-cities")
-                
-                print("⌚ Context cities: \(decodedCities.count)")
             }
             
             // Hourly Forecast
