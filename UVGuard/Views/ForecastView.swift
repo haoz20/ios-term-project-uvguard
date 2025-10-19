@@ -401,8 +401,35 @@ struct ForecastView: View {
                 }
             }
             
-            // Daily items list - inside card
-            VStack(spacing: 12) {
+            // Daily items list - inside card with Grid layout
+            Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 12) {
+                // Header Row
+                GridRow {
+                    Text("Day")
+                        .font(.uvCaption)
+                        .fontWeight(.semibold)
+                        .uvSecondaryText()
+                        .gridColumnAlignment(.leading)
+                    
+                    Text("UV Index")
+                        .font(.uvCaption)
+                        .fontWeight(.semibold)
+                        .uvSecondaryText()
+                        .gridColumnAlignment(.center)
+                    
+                    Text("Max")
+                        .font(.uvCaption)
+                        .fontWeight(.semibold)
+                        .uvSecondaryText()
+                        .gridColumnAlignment(.trailing)
+                }
+                .padding(.bottom, 8)
+                
+                Divider()
+                    .gridCellUnsizedAxes(.horizontal)
+                    .background(Color.uvSecondaryText.opacity(0.3))
+                
+                // Data Rows
                 ForEach(viewModel.dailyForecasts) { forecast in
                     DailyForecastRow(forecast: forecast)
                 }
@@ -578,46 +605,48 @@ struct DailyForecastRow: View {
     let forecast: DailyUVForecast
     
     var body: some View {
-        HStack {
-            // Day and Date
+        GridRow {
+            // Day and Date Column
             VStack(alignment: .leading, spacing: 2) {
                 Text(forecast.dayName)
-                    .font(.headline)
+                    .font(.uvHeadline)
                     .uvPrimaryText()
                 
                 Text(forecast.dateString)
-                    .font(.caption)
+                    .font(.uvCaption)
                     .uvSecondaryText()
             }
-            .frame(width: 80, alignment: .leading)
+            .gridColumnAlignment(.leading)
             
-            Spacer()
-            
-            // UV Bar indicator
-            HStack(spacing: 4) {
+            // UV Bar Indicator Column
+            HStack(spacing: 3) {
                 ForEach(0..<11, id: \.self) { index in
                     RoundedRectangle(cornerRadius: 2)
                         .fill(index < Int(round(forecast.maxUV)) ? uvColor : Color.uvSecondaryText.opacity(0.2))
                         .frame(width: 8, height: 20)
                 }
             }
+            .gridColumnAlignment(.center)
             
-            Spacer()
-            
-            // Max UV
+            // Max UV Value Column
             HStack(spacing: 6) {
                 Image(systemName: "sun.max.fill")
-                    .font(.caption)
+                    .font(.uvCaption)
                     .foregroundColor(uvColor)
                 
                 Text("\(Int(round(forecast.maxUV)))")
-                    .font(.title3)
+                    .font(.uvTitle3)
                     .fontWeight(.bold)
                     .foregroundColor(uvColor)
+                
+                Text(uvDescription)
+                    .font(.uvCaption2)
+                    .uvSecondaryText()
             }
-            .frame(width: 60, alignment: .trailing)
+            .gridColumnAlignment(.trailing)
         }
-        .padding()
+        .padding(.vertical, 8)
+        .padding(.horizontal, 12)
         .background(Color.uvCardBackground.opacity(0.3))
         .cornerRadius(12)
     }
@@ -629,6 +658,16 @@ struct DailyForecastRow: View {
         case 6..<8: return .uvOrangeHighlight
         case 8..<11: return .uvDanger
         default: return .purple
+        }
+    }
+    
+    private var uvDescription: String {
+        switch forecast.maxUV {
+        case 0..<3: return "Low"
+        case 3..<6: return "Moderate"
+        case 6..<8: return "High"
+        case 8..<11: return "Very High"
+        default: return "Extreme"
         }
     }
 }
