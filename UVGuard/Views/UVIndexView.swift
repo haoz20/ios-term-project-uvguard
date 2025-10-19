@@ -39,6 +39,9 @@ struct UVIndexView: View {
                             waitingForLocationView()
                         }
                     }
+                    
+                    // UV Protection Articles Section
+                    ArticlesView()
                 }
                 .padding()
             }
