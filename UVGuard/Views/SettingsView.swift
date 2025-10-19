@@ -47,12 +47,12 @@ struct SettingsView: View {
                     
                     VStack(alignment: .leading, spacing: 2) {
                         Text("UV Notifications")
-                            .font(.body)
+                            .font(.uvBody)
                             .fontWeight(.medium)
                             .foregroundColor(.uvPrimaryText)
                         
                         Text(isNotificationsEnabled ? "Enabled" : "Disabled")
-                            .font(.caption)
+                            .font(.uvCaption)
                             .foregroundColor(.uvSecondaryText)
                     }
                     

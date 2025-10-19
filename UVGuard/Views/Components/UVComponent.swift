@@ -53,11 +53,11 @@ struct UVComponent: View {
             HStack {
                 Image(systemName: "sun.max.fill")
                     .foregroundColor(uvColor)
-                    .font(.title2)
+                    .font(.uvTitle2)
                     .rotationEffect(.degrees(rotationAngle))
                 
                 Text("UV Index")
-                    .font(.headline)
+                    .font(.uvHeadline)
                     .fontWeight(.semibold)
                     .uvPrimaryText()
                 
@@ -99,12 +99,12 @@ struct UVComponent: View {
                 // UV Value
                 VStack(spacing: 4) {
                     Text("\(Int(round(uvData)))")
-                        .font(.system(size: 48, weight: .bold, design: .rounded))
+                        .font(.uvIndexNumber)
                         .foregroundColor(uvColor)
                         .scaleEffect(animationProgress)
                     
                     Text(uvDescription)
-                        .font(.caption)
+                        .font(.uvCaption)
                         .fontWeight(.medium)
                         .uvSecondaryText()
                         .opacity(animationProgress)
@@ -114,7 +114,7 @@ struct UVComponent: View {
             // UV Scale Indicator
             VStack(spacing: 12) {
                 Text("UV Scale")
-                    .font(.subheadline)
+                    .font(.uvSubheadline)
                     .fontWeight(.medium)
                     .uvSecondaryText()
                 
@@ -136,11 +136,11 @@ struct UVComponent: View {
                 
                 HStack {
                     Text("0")
-                        .font(.caption2)
+                        .font(.uvCaption2)
                         .uvSecondaryText()
                     Spacer()
                     Text("11+")
-                        .font(.caption2)
+                        .font(.uvCaption2)
                         .uvSecondaryText()
                 }
             }
@@ -151,13 +151,13 @@ struct UVComponent: View {
                     Image(systemName: "info.circle.fill")
                         .foregroundColor(uvColor)
                     Text("Recommendation")
-                        .font(.subheadline)
+                        .font(.uvSubheadline)
                         .fontWeight(.semibold)
                         .uvPrimaryText()
                 }
                 
                 Text(uvAdvice)
-                    .font(.body)
+                    .font(.uvBody)
                     .uvSecondaryText()
                     .multilineTextAlignment(.leading)
             }

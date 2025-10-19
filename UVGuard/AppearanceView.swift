@@ -29,17 +29,17 @@ struct AppearanceView: View {
                                 // Icon
                                 Image(systemName: option.icon)
                                     .foregroundColor(selection == option ? .uvAccent : .uvSecondaryText)
-                                    .font(.title3)
+                                    .font(.uvTitle3)
                                     .frame(width: 30)
                                 
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(option.rawValue)
-                                        .font(.body)
+                                        .font(.uvBody)
                                         .fontWeight(.medium)
                                         .foregroundColor(.uvPrimaryText)
                                     
                                     Text(option.description)
-                                        .font(.caption)
+                                        .font(.uvCaption)
                                         .foregroundColor(.uvSecondaryText)
                                 }
                                 
@@ -48,7 +48,7 @@ struct AppearanceView: View {
                                 if selection == option {
                                     Image(systemName: "checkmark.circle.fill")
                                         .foregroundColor(.uvAccent)
-                                        .font(.title3)
+                                        .font(.uvTitle3)
                                 }
                             }
                             .padding()
