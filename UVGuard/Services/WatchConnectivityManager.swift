@@ -44,26 +44,6 @@ class WatchConnectivityManager: NSObject, ObservableObject {
         }
     }
     
-    // MARK: - Send Cities to Watch
-    func sendCities(_ cities: [CityModel]) {
-        guard WCSession.default.activationState == .activated else { return }
-        
-        // Encode cities
-        guard let data = try? JSONEncoder().encode(cities) else { return }
-        
-        let context: [String: Any] = [
-            "cities": data,
-            "timestamp": Date().timeIntervalSince1970
-        ]
-        
-        do {
-            try WCSession.default.updateApplicationContext(context)
-            print("📱 Sent \(cities.count) cities to Watch via ApplicationContext")
-        } catch {
-            print("Error updating application context: \(error.localizedDescription)")
-        }
-    }
-    
     // MARK: - Send Hourly Forecast
     func sendHourlyForecast(_ forecast: [(hour: String, uv: Double)]) {
         guard WCSession.default.activationState == .activated else { return }
@@ -161,13 +141,6 @@ extension WatchConnectivityManager: WCSessionDelegate {
             print("📱 Sent current UV: \(uv) to Watch")
         } else {
             print("📱 No UV data available to send")
-        }
-        
-        // Send cities if available
-        if let citiesData = UserDefaults(suiteName: "group.com.swanhtetaung.uvguard")?.data(forKey: "favorite-cities"),
-           let cities = try? JSONDecoder().decode([CityModel].self, from: citiesData) {
-            sendCities(cities)
-            print("📱 Sent \(cities.count) cities to Watch")
         }
     }
 }
