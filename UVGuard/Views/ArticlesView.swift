@@ -10,7 +10,6 @@ import SwiftUI
 struct ArticlesView: View {
     let articles = Article.sampleArticles
     @State private var selectedArticle: Article?
-    @State private var showArticleDetail = false
     
     // Grid layout configuration
     let columns = [
@@ -50,7 +49,6 @@ struct ArticlesView: View {
                             ArticleCard(article: article)
                                 .onTapGesture {
                                     selectedArticle = article
-                                    showArticleDetail = true
                                 }
                         }
                     }
@@ -59,10 +57,8 @@ struct ArticlesView: View {
                 .padding(.bottom)
             }
         }
-        .sheet(isPresented: $showArticleDetail) {
-            if let article = selectedArticle {
-                ArticleDetailView(article: article)
-            }
+        .sheet(item: $selectedArticle) { article in
+            ArticleDetailView(article: article)
         }
     }
 }

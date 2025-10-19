@@ -12,7 +12,6 @@ struct CitiesView: View {
     @State private var showAddCity = false
     @State private var cities: [CityModel] = []
     @State private var selectedCity: CityModel?
-    @State private var showForecast = false
     
     var body: some View {
         NavigationStack {
@@ -30,7 +29,6 @@ struct CitiesView: View {
                                 ForEach(cities) { city in
                                     Button {
                                         selectedCity = city
-                                        showForecast = true
                                     } label: {
                                         CityCard(city: city)
                                     }
@@ -68,11 +66,9 @@ struct CitiesView: View {
                     addCity(city)
                 })
             }
-            .sheet(isPresented: $showForecast) {
-                if let city = selectedCity {
-                    NavigationStack {
-                        ForecastView(city: city)
-                    }
+            .sheet(item: $selectedCity) { city in
+                NavigationStack {
+                    ForecastView(city: city)
                 }
             }
             .onAppear {
