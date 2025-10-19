@@ -24,11 +24,14 @@ struct NotificationSettingsView: View {
                     // MARK: - Notification Status Section
                     notificationStatusSection
                     
-                    // MARK: - Daily Forecast Section
-                    dailyForecastSection
-                    
                     // MARK: - UV Threshold Section
                     thresholdSection
+                    
+                    // MARK: - Morning Briefing Section
+                    morningBriefingSection
+                    
+                    // MARK: - Evening Briefing Section
+                    eveningBriefingSection
                     
                     // MARK: - Preview Section
                     previewSection
@@ -98,7 +101,112 @@ struct NotificationSettingsView: View {
         .modifier(UVCardModifier())
     }
     
-    // MARK: - Daily Forecast Section
+    // MARK: - UV Threshold Section
+    private var thresholdSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Image(systemName: "slider.horizontal.3")
+                    .foregroundColor(.uvAccent)
+                
+                Text("UV Sensitivity")
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .uvPrimaryText()
+                
+                Spacer()
+            }
+            
+            HStack {
+                Text("Alert Threshold")
+                    .uvPrimaryText()
+                Spacer()
+                Text(settings.getThresholdDescription())
+                    .font(.headline)
+                    .uvSecondaryText()
+            }
+            
+            // Discrete integer slider
+            discreteThresholdSlider
+            
+            Text("Only receive notifications when UV index reaches or exceeds this level")
+                .font(.caption)
+                .uvSecondaryText()
+        }
+        .padding()
+        .modifier(UVCardModifier())
+    }
+    
+    // MARK: - Morning Briefing Section
+    private var morningBriefingSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Image(systemName: "sun.max.fill")
+                    .foregroundColor(.uvAccent)
+                
+                Text("Morning Briefing")
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .uvPrimaryText()
+                
+                Spacer()
+            }
+            
+            Toggle("Morning UV Briefing", isOn: $settings.morningBriefingEnabled)
+                .uvPrimaryText()
+            
+            if settings.morningBriefingEnabled {
+                DatePicker(
+                    "Briefing Time",
+                    selection: $settings.morningBriefingTime,
+                    displayedComponents: .hourAndMinute
+                )
+                .uvPrimaryText()
+            }
+            
+            Text("Get notified in the morning if today's UV will exceed your threshold")
+                .font(.caption)
+                .uvSecondaryText()
+        }
+        .padding()
+        .modifier(UVCardModifier())
+    }
+    
+    // MARK: - Evening Briefing Section
+    private var eveningBriefingSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Image(systemName: "moon.stars.fill")
+                    .foregroundColor(.purple)
+                
+                Text("Evening Briefing")
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .uvPrimaryText()
+                
+                Spacer()
+            }
+            
+            Toggle("Evening UV Briefing", isOn: $settings.eveningBriefingEnabled)
+                .uvPrimaryText()
+            
+            if settings.eveningBriefingEnabled {
+                DatePicker(
+                    "Briefing Time",
+                    selection: $settings.eveningBriefingTime,
+                    displayedComponents: .hourAndMinute
+                )
+                .uvPrimaryText()
+            }
+            
+            Text("Get notified in the evening if tomorrow's UV will exceed your threshold")
+                .font(.caption)
+                .uvSecondaryText()
+        }
+        .padding()
+        .modifier(UVCardModifier())
+    }
+    
+    // MARK: - Daily Forecast Section (Deprecated)
     private var dailyForecastSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
@@ -126,48 +234,6 @@ struct NotificationSettingsView: View {
             }
             
             Text("Receive a morning summary of today's UV forecast")
-                .font(.caption)
-                .uvSecondaryText()
-        }
-        .padding()
-        .modifier(UVCardModifier())
-    }
-    
-    // MARK: - UV Threshold Section
-    private var thresholdSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundColor(.uvDanger)
-                
-                Text("UV Threshold Alerts")
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                    .uvPrimaryText()
-                
-                Spacer()
-            }
-            
-            Toggle("UV Threshold Alerts", isOn: $settings.thresholdNotificationsEnabled)
-                .uvPrimaryText()
-            
-            if settings.thresholdNotificationsEnabled {
-                VStack(spacing: 16) {
-                    HStack {
-                        Text("Alert Threshold")
-                            .uvPrimaryText()
-                        Spacer()
-                        Text(settings.getThresholdDescription())
-                            .font(.headline)
-                            .uvSecondaryText()
-                    }
-                    
-                    // Discrete integer slider
-                    discreteThresholdSlider
-                }
-            }
-            
-            Text("Get notified 15 minutes before UV index reaches or exceeds this level")
                 .font(.caption)
                 .uvSecondaryText()
         }
@@ -218,22 +284,30 @@ struct NotificationSettingsView: View {
                 .fontWeight(.semibold)
                 .uvPrimaryText()
             
-            if settings.dailyForecastEnabled {
+            if settings.morningBriefingEnabled {
                 NotificationPreviewCard(
                     icon: "sun.max.fill",
-                    title: "Today's UV Forecast ☀️",
-                    message: "Peak UV Index: 7.5 (High)\n⚠️ Protection essential! Wear sunscreen and avoid midday sun.",
+                    title: "Today's UV Briefing",
+                    message: "Today: peak UV 9 (Very High) 12:00–14:30. Hat & SPF 50 recommended.",
                     color: .uvAccent
                 )
             }
             
-            if settings.thresholdNotificationsEnabled {
+            if settings.eveningBriefingEnabled {
                 NotificationPreviewCard(
-                    icon: "exclamationmark.triangle.fill",
-                    title: "⚠️ High UV Alert",
-                    message: "UV Index will reach \(settings.uvThreshold) at 2:00 PM.\n☀️ Use SPF 30+ sunscreen and wear protective clothing.",
-                    color: .uvDanger
+                    icon: "moon.stars.fill",
+                    title: " Tomorrow's UV Briefing",
+                    message: "Tomorrow: peak UV 7 (High) 11:30–15:00. Hat & SPF 30+ recommended.",
+                    color: .purple
                 )
+            }
+            
+            if !settings.morningBriefingEnabled && !settings.eveningBriefingEnabled {
+                Text("Enable morning or evening briefings to see examples")
+                    .font(.caption)
+                    .uvSecondaryText()
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding()
             }
         }
         .padding()
@@ -243,10 +317,28 @@ struct NotificationSettingsView: View {
     // MARK: - Test Section
     private var testSection: some View {
         VStack(spacing: 12) {
+            Button(action: sendTestMorningBriefing) {
+                HStack {
+                    Image(systemName: "sun.max.fill")
+                    Text("Test Morning Briefing (5 sec)")
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(UVSecondaryButtonStyle())
+            
+            Button(action: sendTestEveningBriefing) {
+                HStack {
+                    Image(systemName: "moon.stars.fill")
+                    Text("Test Evening Briefing (5 sec)")
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(UVSecondaryButtonStyle())
+            
             Button(action: sendTestNotification) {
                 HStack {
                     Image(systemName: "bell.badge.fill")
-                    Text("Send Test Notification")
+                    Text("Send Generic Test (3 sec)")
                 }
                 .frame(maxWidth: .infinity)
             }
@@ -257,7 +349,7 @@ struct NotificationSettingsView: View {
             }) {
                 HStack {
                     Image(systemName: "list.bullet")
-                    Text("View Pending Notifications")
+                    Text("Debug: View Pending Notifications")
                 }
                 .frame(maxWidth: .infinity)
             }
@@ -347,6 +439,48 @@ struct NotificationSettingsView: View {
                 }
             }
         }
+    }
+    
+    private func sendTestMorningBriefing() {
+        let content = UNMutableNotificationContent()
+        content.title = "☀️ Today's UV Briefing"
+        content.body = "Today: peak UV 9 (Very High) 12:00–14:30. Hat & SPF 50 recommended."
+        content.sound = .default
+        content.badge = 1
+        content.userInfo = ["type": "test-morning-briefing"]
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+        let request = UNNotificationRequest(identifier: "test-morning-briefing", content: content, trigger: trigger)
+        
+        UNUserNotificationCenter.current().add(request) { error in
+            DispatchQueue.main.async {
+                if error == nil {
+                    showingTestNotification = true
+                }
+            }
+        }
+        print("📱 Test morning briefing will arrive in 5 seconds")
+    }
+    
+    private func sendTestEveningBriefing() {
+        let content = UNMutableNotificationContent()
+        content.title = "🌙 Tomorrow's UV Briefing"
+        content.body = "Tomorrow: peak UV 7 (High) 11:30–15:00. Hat & SPF 30+ recommended."
+        content.sound = .default
+        content.badge = 1
+        content.userInfo = ["type": "test-evening-briefing"]
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+        let request = UNNotificationRequest(identifier: "test-evening-briefing", content: content, trigger: trigger)
+        
+        UNUserNotificationCenter.current().add(request) { error in
+            DispatchQueue.main.async {
+                if error == nil {
+                    showingTestNotification = true
+                }
+            }
+        }
+        print("📱 Test evening briefing will arrive in 5 seconds")
     }
 }
 

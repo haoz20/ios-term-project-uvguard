@@ -162,26 +162,60 @@ class UVIndexViewModel {
     
     private func scheduleNotificationsIfNeeded() {
         // Check if any notifications are enabled
-        let hasNotificationsEnabled = notificationSettings.dailyForecastEnabled || 
-                                      notificationSettings.thresholdNotificationsEnabled
+        let hasNotificationsEnabled = notificationSettings.morningBriefingEnabled || 
+                                      notificationSettings.eveningBriefingEnabled
         
         guard hasNotificationsEnabled else { return }
         
-        // Schedule daily forecast notification
-        if notificationSettings.dailyForecastEnabled {
-            let calendar = Calendar.current
-            let hour = calendar.component(.hour, from: notificationSettings.dailyForecastTime)
-            notificationManager.scheduleDailyForecastNotification(at: hour, hourlyForecast: hourlyForecast)
-        }
+        // Get today's and tomorrow's forecasts
+        let (todayForecast, tomorrowForecast) = splitForecastByDay(hourlyForecast: hourlyForecast)
         
-        // Schedule threshold notifications
-        if notificationSettings.thresholdNotificationsEnabled {
-            notificationManager.scheduleUVThresholdNotifications(
-                threshold: Double(notificationSettings.uvThreshold), // Convert Int to Double
-                hourlyForecast: hourlyForecast,
-                timezone: timezone
+        let threshold = Double(notificationSettings.uvThreshold)
+        
+        // Schedule morning briefing with today's forecast
+        if notificationSettings.morningBriefingEnabled {
+            notificationManager.scheduleMorningBriefing(
+                at: notificationSettings.morningBriefingTime,
+                todayForecast: todayForecast,
+                threshold: threshold
             )
         }
+        
+        // Schedule evening briefing with tomorrow's forecast
+        if notificationSettings.eveningBriefingEnabled {
+            notificationManager.scheduleEveningBriefing(
+                at: notificationSettings.eveningBriefingTime,
+                tomorrowForecast: tomorrowForecast,
+                threshold: threshold
+            )
+        }
+    }
+    
+    /// Splits hourly forecast into today and tomorrow based on dates
+    private func splitForecastByDay(hourlyForecast: [(time: String, uv: Double)]) -> (today: [(time: String, uv: Double)], tomorrow: [(time: String, uv: Double)]) {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
+        dateFormatter.timeZone = TimeZone(identifier: timezone)
+        
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        let tomorrow = calendar.date(byAdding: .day, value: 1, to: today)!
+        let dayAfterTomorrow = calendar.date(byAdding: .day, value: 2, to: today)!
+        
+        var todayForecast: [(time: String, uv: Double)] = []
+        var tomorrowForecast: [(time: String, uv: Double)] = []
+        
+        for forecast in hourlyForecast {
+            guard let date = dateFormatter.date(from: forecast.time) else { continue }
+            
+            if date >= today && date < tomorrow {
+                todayForecast.append(forecast)
+            } else if date >= tomorrow && date < dayAfterTomorrow {
+                tomorrowForecast.append(forecast)
+            }
+        }
+        
+        return (todayForecast, tomorrowForecast)
     }
     
     private func findCurrentUV(from response: UVResponse) {
