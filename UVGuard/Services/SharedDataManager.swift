@@ -51,8 +51,11 @@ class SharedDataManager {
     }
     
     // MARK: - Load Data
-    func getCurrentUV() -> Double {
-        return userDefaults?.double(forKey: Keys.currentUV) ?? 5.5
+    func getCurrentUV() -> Double? {
+        guard let uv = userDefaults?.double(forKey: Keys.currentUV), uv > 0 else {
+            return nil
+        }
+        return uv
     }
     
     func getHourlyForecast() -> [(hour: String, uv: Double)] {
@@ -73,14 +76,14 @@ class SharedDataManager {
         }
     }
     
-    func getLocation() -> (city: String, country: String) {
-        let city = userDefaults?.string(forKey: Keys.cityName) ?? "Unknown"
-        let country = userDefaults?.string(forKey: Keys.countryName) ?? ""
+    func getLocation() -> (city: String?, country: String?) {
+        let city = userDefaults?.string(forKey: Keys.cityName)
+        let country = userDefaults?.string(forKey: Keys.countryName)
         return (city, country)
     }
     
-    func getLastUpdate() -> Date {
-        return userDefaults?.object(forKey: Keys.lastUpdate) as? Date ?? Date()
+    func getLastUpdate() -> Date? {
+        return userDefaults?.object(forKey: Keys.lastUpdate) as? Date
     }
     
     // MARK: - Clear Data
