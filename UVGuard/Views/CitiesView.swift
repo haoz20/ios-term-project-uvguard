@@ -85,16 +85,16 @@ struct CitiesView: View {
     private var emptyStateView: some View {
         VStack(spacing: 20) {
             Image(systemName: "location.slash.fill")
-                .font(.system(size: 60))
+                .font(.montserratBold(60))
                 .foregroundColor(.uvAccent)
             
             Text("No Cities Added")
-                .font(.title2)
+                .font(.uvTitle2)
                 .fontWeight(.bold)
                 .uvPrimaryText()
             
             Text("Add cities to see UV index information for multiple locations.")
-                .font(.body)
+                .font(.uvBody)
                 .multilineTextAlignment(.center)
                 .uvSecondaryText()
                 .padding(.horizontal, 40)

@@ -2,7 +2,7 @@
 //  UVGuardTheme.swift
 //  UVGuard
 //
-//  Theme colors and styles for UV Guard app
+//  Theme colors and styles for UV Guard app with Dark Mode support
 //
 
 import SwiftUI
@@ -10,7 +10,7 @@ import SwiftUI
 // MARK: - Color Palette
 
 extension Color {
-    // Primary palette
+    // Primary palette - Light mode colors
     static let uvLightCream = Color(hex: "FBF9D1")
     static let uvSandBeige = Color(hex: "FFFDE7")
     static let uvWarmTan = Color(hex: "C1856D")
@@ -20,11 +20,65 @@ extension Color {
     static let uvOrangeHighlight = Color(hex: "FA812F")
     static let uvWarningRed = Color(hex: "DD0303")
     
-    // Semantic colors
-    static let uvBackground = Color.uvSoftYellow
-    static let uvCardBackground = Color.uvSandBeige
-    static let uvPrimaryText = Color.uvDeepRed
-    static let uvSecondaryText = Color.uvWarmTan
+    // Dark mode colors
+    private static let uvDarkBackground = Color(hex: "1C1C1E")
+    private static let uvDarkCard = Color(hex: "2C2C2E")
+    private static let uvDarkPrimaryText = Color(hex: "FFFDE7")
+    private static let uvDarkSecondaryText = Color(hex: "E0B494")
+    
+    // Adaptive semantic colors (changes based on color scheme)
+    #if os(iOS)
+    static var uvBackground: Color {
+        Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark
+                ? UIColor(Color(hex: "1C1C1E"))
+                : UIColor(Color.uvSoftYellow)
+        })
+    }
+    
+    static var uvCardBackground: Color {
+        Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark
+                ? UIColor(Color(hex: "2C2C2E"))
+                : UIColor(Color.uvSandBeige)
+        })
+    }
+    
+    static var uvPrimaryText: Color {
+        Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark
+                ? UIColor(Color(hex: "FFFDE7"))
+                : UIColor(Color.uvDeepRed)
+        })
+    }
+    
+    static var uvSecondaryText: Color {
+        Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark
+                ? UIColor(Color(hex: "E0B494"))
+                : UIColor(Color.uvWarmTan)
+        })
+    }
+    #else
+    // watchOS uses SwiftUI's native color scheme detection
+    static var uvBackground: Color {
+        Color("AdaptiveBackground")
+    }
+    
+    static var uvCardBackground: Color {
+        Color("AdaptiveCardBackground")
+    }
+    
+    static var uvPrimaryText: Color {
+        Color("AdaptivePrimaryText")
+    }
+    
+    static var uvSecondaryText: Color {
+        Color("AdaptiveSecondaryText")
+    }
+    #endif
+    
+    // Non-adaptive colors (same in light and dark mode)
     static let uvAccent = Color.uvGoldAccent
     static let uvDanger = Color.uvWarningRed  // Alias for danger/warning states
     
@@ -71,17 +125,21 @@ extension LinearGradient {
         endPoint: .trailing
     )
     
-    static let uvBackground = LinearGradient(
-        colors: [Color.uvSoftYellow, Color.uvLightCream],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
+    static var uvBackground: LinearGradient {
+        LinearGradient(
+            colors: [Color.uvBackground, Color.uvBackground.opacity(0.9)],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    }
     
-    static let uvCard = LinearGradient(
-        colors: [Color.uvSandBeige, Color(hex: "FFF8E1")],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
+    static var uvCard: LinearGradient {
+        LinearGradient(
+            colors: [Color.uvCardBackground, Color.uvCardBackground.opacity(0.95)],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    }
     
     static let uvDanger = LinearGradient(
         colors: [Color.uvWarningRed, Color.uvWarningRed.opacity(0.9)],

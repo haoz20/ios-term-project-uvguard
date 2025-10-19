@@ -35,12 +35,13 @@ struct CurrentUVIndexView: View {
                 // City Name
                 VStack(spacing: 4) {
                     Image(systemName: "location.fill")
-                        .font(.caption2)
+                        .font(.uvCaption2)
                         .foregroundColor(.uvAccent)
                     
                     Text(viewModel.location)
-                        .font(.caption)
+                        .font(.uvCaption)
                         .fontWeight(.semibold)
+                        .foregroundColor(.uvPrimaryText)
                         .multilineTextAlignment(.center)
                         .lineLimit(2)
                 }
@@ -59,19 +60,20 @@ struct CurrentUVIndexView: View {
                         
                         VStack(spacing: 0) {
                             Text("\(Int(uv.rounded()))")
-                                .font(.system(size: 36, weight: .bold))
+                                .font(.montserratBold(36))
                                 .foregroundColor(uvLevel.color)
                             
                             Text("UV")
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
+                                .font(.uvCaption2)
+                                .foregroundColor(.uvSecondaryText)
                         }
                     }
                     
                     // Level Description
                     Text(uvLevel.description)
-                        .font(.caption)
+                        .font(.uvCaption)
                         .fontWeight(.semibold)
+                        .foregroundColor(.uvPrimaryText)
                 }
                 
                 // Recommendation
@@ -80,15 +82,16 @@ struct CurrentUVIndexView: View {
                 
                 VStack(spacing: 12) {
                     Image(systemName: "exclamationmark.triangle")
-                        .font(.largeTitle)
+                        .font(.montserratBold(34))
                         .foregroundColor(.orange)
                     
                     Text("No UV data")
-                        .font(.headline)
+                        .font(.uvHeadline)
+                        .foregroundColor(.uvPrimaryText)
                     
                     Text(viewModel.errorMessage ?? "Open the iPhone app to sync data")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                        .font(.uvCaption)
+                        .foregroundColor(.uvSecondaryText)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
                     
@@ -96,7 +99,7 @@ struct CurrentUVIndexView: View {
                         viewModel.refresh()
                     } label: {
                         Label("Refresh", systemImage: "arrow.clockwise")
-                            .font(.caption)
+                            .font(.uvCaption)
                     }
                     .buttonStyle(.bordered)
                     .tint(.uvAccent)
