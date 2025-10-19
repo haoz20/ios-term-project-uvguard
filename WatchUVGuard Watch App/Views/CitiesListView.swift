@@ -11,46 +11,55 @@ struct CitiesListView: View {
     @State private var viewModel = CitiesViewModel()
     
     var body: some View {
-        NavigationStack {
-            Group {
-                if viewModel.isLoading {
-                    ProgressView()
-                } else if viewModel.cities.isEmpty {
-                    emptyStateView
-                } else {
-                    List(viewModel.cities) { city in
-                        NavigationLink(destination: CityDetailView(city: city)) {
-                            CityRowView(city: city)
-                        }
+        Group {
+            if viewModel.isLoading {
+                ProgressView()
+                    .padding(.vertical, 30)
+            } else if viewModel.cities.isEmpty {
+                emptyStateView
+            } else {
+                List(viewModel.cities) { city in
+                    NavigationLink {
+                        CityDetailView(city: city)
+                    } label: {
+                        CityRowView(city: city)
                     }
-                    .listStyle(.plain)
                 }
+                .listStyle(.plain)
             }
-            .navigationTitle("Cities")
-            .navigationBarTitleDisplayMode(.inline)
-            .onAppear {
-                viewModel.loadCities()
+        }
+        .navigationTitle("Cities")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    viewModel.refresh()
+                } label: {
+                    Image(systemName: "arrow.clockwise")
+                        .font(.caption)
+                }
+                .buttonStyle(.plain)
             }
-            .refreshable {
-                viewModel.refresh()
-            }
+        }
+        .onAppear {
+            viewModel.loadCities()
         }
     }
     
     private var emptyStateView: some View {
         VStack(spacing: 12) {
             Image(systemName: "building.2")
-                .font(.title2)
-                .foregroundColor(.uvAccent.opacity(0.6))
+                .font(.largeTitle)
+                .foregroundColor(.orange)
             
             Text("No Cities")
                 .font(.headline)
-                .foregroundColor(.uvPrimaryText)
             
-            Text("Add cities in the iOS app")
-                .font(.caption2)
-                .foregroundColor(.uvSecondaryText)
+            Text("Add cities in the iPhone app to see them here")
+                .font(.caption)
+                .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
+                .padding(.horizontal)
         }
         .padding()
     }

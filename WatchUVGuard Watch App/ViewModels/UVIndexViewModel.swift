@@ -11,25 +11,30 @@ import Observation
 @Observable
 class UVIndexViewModel {
     var currentUV: Double? = nil
-    var location: String = "Loading..."
+    var location: String = "Unknown Location"
     var isLoading: Bool = false
     var errorMessage: String? = nil
     
-    init() {
-        loadData()
-    }
-    
     func loadData() {
-        let sharedData = SharedDataManager.shared
+        isLoading = true
+        errorMessage = nil
         
-        self.currentUV = sharedData.getCurrentUV()
-        let locationData = sharedData.getLocation()
-        
-        if let city = locationData.city {
-            self.location = city
-        } else {
-            self.location = "Unknown Location"
-            self.errorMessage = "No data available. Please open the iPhone app first."
+        // Use a small delay to ensure UI updates smoothly
+        Task { @MainActor in
+            let sharedData = SharedDataManager.shared
+            
+            self.currentUV = sharedData.getCurrentUV()
+            let locationData = sharedData.getLocation()
+            
+            if let city = locationData.city {
+                self.location = city
+                self.errorMessage = nil
+            } else {
+                self.location = "Unknown Location"
+                self.errorMessage = "No data available. Please open the iPhone app first."
+            }
+            
+            self.isLoading = false
         }
     }
     
