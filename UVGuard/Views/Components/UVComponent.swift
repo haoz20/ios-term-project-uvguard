@@ -220,10 +220,6 @@ struct UVComponent: View {
     }
 }
 
-enum UVLevel {
-    case low, moderate, high, veryHigh, extreme
-}
-
 #Preview {
     ScrollView {
         VStack(spacing: 20) {
