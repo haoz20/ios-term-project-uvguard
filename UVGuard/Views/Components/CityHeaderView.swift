@@ -21,7 +21,7 @@ struct CityHeaderView: View {
                 Text(Date().formatted(.dateTime.month().day()))
                     .font(.uvHeadline)
                     .uvSecondaryText()
-                Text(Date().formatted(.dateTime.hour().minute()))
+                Text(Date().formattedTime())
                     .uvSecondaryText()
             }
             

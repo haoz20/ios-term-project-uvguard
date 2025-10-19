@@ -219,8 +219,7 @@ class UVNotificationManager {
     }
     
     private func generateThresholdMessage(uv: Double, time: Date, threshold: Double) -> String {
-        let timeFormatter = DateFormatter()
-        timeFormatter.dateFormat = "h:mm a"
+        let timeFormatter = DateFormatter.timeFormatter()
         timeFormatter.timeZone = .current
         
         let timeString = timeFormatter.string(from: time)
