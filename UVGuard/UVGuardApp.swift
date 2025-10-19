@@ -17,6 +17,9 @@ struct UVGuardApp: App {
         
         // Initialize settings manager to load saved preferences
         _ = SettingsManager.shared
+        
+        // Initialize WatchConnectivity
+        _ = WatchConnectivityManager.shared
     }
     
     var body: some Scene {

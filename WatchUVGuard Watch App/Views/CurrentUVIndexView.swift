@@ -75,12 +75,6 @@ struct CurrentUVIndexView: View {
                 }
                 
                 // Recommendation
-                Text(uvLevel.recommendation)
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 8)
-                
             } else {
                 Spacer()
                 

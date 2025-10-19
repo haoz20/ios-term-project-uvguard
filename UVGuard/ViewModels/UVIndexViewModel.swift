@@ -19,6 +19,8 @@ class UVIndexViewModel {
     
     var hourlyForecast: [(time: String, uv: Double)] = []
     var timezone: String = "UTC"
+    var city: String?
+    var country: String?
     
     private let apiBaseURL = "https://api.open-meteo.com/v1/forecast"
     private let notificationManager = UVNotificationManager.shared
@@ -98,11 +100,19 @@ class UVIndexViewModel {
         // Save current UV for widget
         if let currentUV = currentUV {
             SharedDataManager.shared.saveCurrentUV(currentUV)
+            
+            // Send to Apple Watch
+            if let city = city, let country = country {
+                WatchConnectivityManager.shared.sendUVData(uv: currentUV, location: (city, country))
+            }
         }
         
         // Save hourly forecast (first 4 hours)
         let widgetForecast = prepareWidgetForecast()
         SharedDataManager.shared.saveHourlyForecast(widgetForecast)
+        
+        // Send forecast to Watch
+        WatchConnectivityManager.shared.sendHourlyForecast(widgetForecast)
         
         // Save last update time
         SharedDataManager.shared.saveLastUpdate(Date())

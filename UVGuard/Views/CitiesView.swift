@@ -136,6 +136,9 @@ struct CitiesView: View {
             let defaults = UserDefaults(suiteName: "group.com.swanhtetaung.uvguard") ?? .standard
             defaults.set(saveCities, forKey: "favorite-cities")
             defaults.synchronize()
+            
+            // Send to Apple Watch via WatchConnectivity
+            WatchConnectivityManager.shared.sendCities(cities)
         } catch {
             print("Error saving cities: \(error)")
         }
