@@ -8,11 +8,22 @@
 import SwiftUI
 
 struct ContentView: View {
-//    @StateObject var locationDataManager = LocationDataManager()
+    @State private var settingsManager = SettingsManager.shared
+    
     var body: some View {
-//            Text("Latitude: \(locationDataManager.locationManager.location?.coordinate.latitude.description ?? "Error loading")")
-//            Text("Longitude: \(locationDataManager.locationManager.location?.coordinate.longitude.description ?? "Error loading")")
-            RootTabView()
+        RootTabView()
+            .preferredColorScheme(colorScheme)
+    }
+    
+    private var colorScheme: ColorScheme? {
+        switch settingsManager.appearance {
+        case .system:
+            return nil
+        case .light:
+            return .light
+        case .dark:
+            return .dark
+        }
     }
 }
 

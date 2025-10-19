@@ -85,6 +85,7 @@
 				Models/UVLevel.swift,
 				Models/UVModel.swift,
 				Services/SharedDataManager.swift,
+				"Theme/Font+CustomFonts.swift",
 				Theme/UVGuardTheme.swift,
 			);
 			target = 4487A9D02EA4A8AB002D7485 /* WatchUVGuard Watch App */;
