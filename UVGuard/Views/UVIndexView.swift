@@ -28,7 +28,7 @@ struct UVIndexView: View {
                     // Content
                     Group {
                         if viewModel.isLoading {
-                            ProgressView("Fetching UV data...")
+                            ProgressView("Loading UV Index...")
                                 .font(.headline)
                                 .frame(height: 300)
                         } else if let uv = viewModel.currentUV {

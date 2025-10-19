@@ -27,86 +27,100 @@ struct CurrentUVIndexView: View {
     }
     
     var body: some View {
-        VStack(spacing: 16) {
-            if viewModel.isLoading {
-                ProgressView()
-                    .padding(.vertical, 30)
-            } else if let uv = viewModel.currentUV {
-                // City Name
-                VStack(spacing: 4) {
-                    Image(systemName: "location.fill")
-                        .font(.uvCaption2)
-                        .foregroundColor(.uvAccent)
+        ScrollView {
+            VStack(spacing: 12) {
+                if viewModel.isLoading {
+                    ProgressView()
+                        .tint(.green)
+                        .padding(.vertical, 30)
+                } else if let uv = viewModel.currentUV {
+                    // City Name
+                    VStack(spacing: 2) {
+                        Image(systemName: "location.fill")
+                            .font(.caption2)
+                            .foregroundColor(.green)
+                        
+                        Text(viewModel.location)
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.center)
+                            .lineLimit(2)
+                    }
                     
-                    Text(viewModel.location)
-                        .font(.uvCaption)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.uvPrimaryText)
-                        .multilineTextAlignment(.center)
-                        .lineLimit(2)
-                }
-                .padding(.top, 8)
-                // UV Index Display
-                VStack(spacing: 8) {
-                    // UV Circle
-                    ZStack {
-                        Circle()
-                            .fill(uvLevel.color.opacity(0.2))
-                            .frame(width: 90, height: 90)
-                        
-                        Circle()
-                            .stroke(uvLevel.color, lineWidth: 3)
-                            .frame(width: 90, height: 90)
-                        
-                        VStack(spacing: 0) {
-                            Text("\(Int(uv.rounded()))")
-                                .font(.montserratBold(36))
-                                .foregroundColor(uvLevel.color)
+                    // UV Index Display
+                    VStack(spacing: 6) {
+                        // UV Circle
+                        ZStack {
+                            Circle()
+                                .fill(uvLevel.color.opacity(0.2))
+                                .frame(width: 100, height: 100)
                             
-                            Text("UV")
-                                .font(.uvCaption2)
-                                .foregroundColor(.uvSecondaryText)
+                            Circle()
+                                .stroke(uvLevel.color, lineWidth: 4)
+                                .frame(width: 100, height: 100)
+                            
+                            VStack(spacing: 2) {
+                                Text("\(Int(uv.rounded()))")
+                                    .font(.system(size: 40, weight: .bold, design: .rounded))
+                                    .foregroundColor(uvLevel.color)
+                                
+                                Text("UV")
+                                    .font(.caption2)
+                                    .foregroundColor(.white.opacity(0.7))
+                            }
                         }
+                        
+                        // Level Description
+                        Text(uvLevel.description)
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
                     }
                     
-                    // Level Description
-                    Text(uvLevel.description)
-                        .font(.uvCaption)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.uvPrimaryText)
-                }
-                
-                // Recommendation
-            } else {
-                Spacer()
-                
-                VStack(spacing: 12) {
-                    Image(systemName: "exclamationmark.triangle")
-                        .font(.montserratBold(34))
-                        .foregroundColor(.orange)
-                    
-                    Text("No UV data")
-                        .font(.uvHeadline)
-                        .foregroundColor(.uvPrimaryText)
-                    
-                    Text(viewModel.errorMessage ?? "Open the iPhone app to sync data")
-                        .font(.uvCaption)
-                        .foregroundColor(.uvSecondaryText)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
-                    
-                    Button {
-                        viewModel.refresh()
-                    } label: {
-                        Label("Refresh", systemImage: "arrow.clockwise")
-                            .font(.uvCaption)
+                    // Recommendation
+                    VStack(spacing: 4) {
+                        Text("Protection")
+                            .font(.caption2)
+                            .foregroundColor(.white.opacity(0.7))
+                        
+                        Text(getRecommendation())
+                            .font(.caption)
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.center)
+                            .lineLimit(3)
                     }
-                    .buttonStyle(.bordered)
-                    .tint(.uvAccent)
+                    .padding(.horizontal, 8)
+                    
+                } else {
+                    VStack(spacing: 12) {
+                        Image(systemName: "exclamationmark.triangle")
+                            .font(.system(size: 34, weight: .bold))
+                            .foregroundColor(.orange)
+                        
+                        Text("No UV data")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                        
+                        Text(viewModel.errorMessage ?? "Open the iPhone app to sync data")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.7))
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal)
+                        
+                        Button {
+                            viewModel.refresh()
+                        } label: {
+                            Label("Refresh", systemImage: "arrow.clockwise")
+                                .font(.caption)
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(.green)
+                    }
+                    .padding(.vertical, 20)
                 }
-                
-                Spacer()
             }
+            .padding(.vertical, 8)
         }
         .navigationTitle("UV Index")
         .navigationBarTitleDisplayMode(.inline)
@@ -123,6 +137,22 @@ struct CurrentUVIndexView: View {
         }
         .onAppear {
             viewModel.loadData()
+        }
+    }
+    
+    // Helper function for recommendations
+    private func getRecommendation() -> String {
+        switch uvLevel {
+        case .low:
+            return "Minimal protection needed"
+        case .moderate:
+            return "Wear sunscreen"
+        case .high:
+            return "Protection essential"
+        case .veryHigh:
+            return "Extra protection required"
+        case .extreme:
+            return "Avoid sun exposure"
         }
     }
 }

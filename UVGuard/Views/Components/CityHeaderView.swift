@@ -4,6 +4,7 @@ import CoreLocation
 struct CityHeaderView: View {
     var location: CLLocation
     @State private var placemark: CLPlacemark?
+    @State private var settingsManager = SettingsManager.shared
     
     var body: some View {
         HStack(spacing: 4) {

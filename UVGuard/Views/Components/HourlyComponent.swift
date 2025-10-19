@@ -3,6 +3,7 @@ import SwiftUI
 struct HourlyComponent: View {
     let date: Date
     let uvIndex: Double
+    @State private var settingsManager = SettingsManager.shared
     
     private var timeString: String {
         let calendar = Calendar.current

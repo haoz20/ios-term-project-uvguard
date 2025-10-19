@@ -14,6 +14,7 @@ extension Date {
     func formattedTime(use24Hour: Bool? = nil) -> String {
         let use24 = use24Hour ?? SettingsManager.shared.is24HourTime
         let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = use24 ? "HH:mm" : "h:mm a"
         return formatter.string(from: self)
     }
@@ -24,6 +25,7 @@ extension Date {
     func formattedTimeWithSeconds(use24Hour: Bool? = nil) -> String {
         let use24 = use24Hour ?? SettingsManager.shared.is24HourTime
         let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = use24 ? "HH:mm:ss" : "h:mm:ss a"
         return formatter.string(from: self)
     }
@@ -34,6 +36,7 @@ extension Date {
     func formattedHour(use24Hour: Bool? = nil) -> String {
         let use24 = use24Hour ?? SettingsManager.shared.is24HourTime
         let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = use24 ? "HH" : "ha"
         return formatter.string(from: self)
     }
@@ -44,6 +47,7 @@ extension Date {
     func formattedShortHour(use24Hour: Bool? = nil) -> String {
         let use24 = use24Hour ?? SettingsManager.shared.is24HourTime
         let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
         if use24 {
             formatter.dateFormat = "HH"
         } else {
@@ -61,6 +65,7 @@ extension DateFormatter {
     static func timeFormatter(use24Hour: Bool? = nil) -> DateFormatter {
         let use24 = use24Hour ?? SettingsManager.shared.is24HourTime
         let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = use24 ? "HH:mm" : "h:mm a"
         return formatter
     }
@@ -69,6 +74,7 @@ extension DateFormatter {
     static func hourFormatter(use24Hour: Bool? = nil) -> DateFormatter {
         let use24 = use24Hour ?? SettingsManager.shared.is24HourTime
         let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = use24 ? "HH" : "ha"
         return formatter
     }
