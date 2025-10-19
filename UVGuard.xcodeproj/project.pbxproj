@@ -8,12 +8,20 @@
 
 /* Begin PBXBuildFile section */
 		4405A5EC2E5DF3680039C2FF /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 4405A5EB2E5DF3680039C2FF /* Alamofire */; };
+		4487A9DB2EA4A8AD002D7485 /* WatchUVGuard Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 4487A9D12EA4A8AB002D7485 /* WatchUVGuard Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		44BBFC572EA3DA2F003C6F2B /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44BBFC562EA3DA2F003C6F2B /* WidgetKit.framework */; };
 		44BBFC592EA3DA2F003C6F2B /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44BBFC582EA3DA2F003C6F2B /* SwiftUI.framework */; };
 		44BBFC642EA3DA31003C6F2B /* UVGuardWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 44BBFC542EA3DA2F003C6F2B /* UVGuardWidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		4487A9D92EA4A8AD002D7485 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 44BD5D9A2E5639CF002CA787 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4487A9D02EA4A8AB002D7485;
+			remoteInfo = "WatchUVGuard Watch App";
+		};
 		44BBFC622EA3DA31003C6F2B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 44BD5D9A2E5639CF002CA787 /* Project object */;
@@ -24,6 +32,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		4487A9DC2EA4A8AD002D7485 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				4487A9DB2EA4A8AD002D7485 /* WatchUVGuard Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		44BBFC652EA3DA31003C6F2B /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -38,6 +57,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4487A9D12EA4A8AB002D7485 /* WatchUVGuard Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WatchUVGuard Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		44BBFC542EA3DA2F003C6F2B /* UVGuardWidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = UVGuardWidgetsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		44BBFC562EA3DA2F003C6F2B /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		44BBFC582EA3DA2F003C6F2B /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -46,6 +66,17 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		4487A9EA2EA4B0E9002D7485 /* Exceptions for "UVGuard" folder in "WatchUVGuard Watch App" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Models/CityModel.swift,
+				Models/UVLevel.swift,
+				Models/UVModel.swift,
+				Services/SharedDataManager.swift,
+				Theme/UVGuardTheme.swift,
+			);
+			target = 4487A9D02EA4A8AB002D7485 /* WatchUVGuard Watch App */;
+		};
 		44BBFC682EA3DA31003C6F2B /* Exceptions for "UVGuardWidgets" folder in "UVGuardWidgetsExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -56,6 +87,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		4487A9D22EA4A8AB002D7485 /* WatchUVGuard Watch App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "WatchUVGuard Watch App";
+			sourceTree = "<group>";
+		};
 		44BBFC5A2EA3DA2F003C6F2B /* UVGuardWidgets */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -66,12 +102,22 @@
 		};
 		44BD5DA42E5639CF002CA787 /* UVGuard */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				4487A9EA2EA4B0E9002D7485 /* Exceptions for "UVGuard" folder in "WatchUVGuard Watch App" target */,
+			);
 			path = UVGuard;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		4487A9CE2EA4A8AB002D7485 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		44BBFC512EA3DA2F003C6F2B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -107,6 +153,7 @@
 				44BBFCAA2EA3EB5F003C6F2B /* UVGuardWidgetsExtension.entitlements */,
 				44BD5DA42E5639CF002CA787 /* UVGuard */,
 				44BBFC5A2EA3DA2F003C6F2B /* UVGuardWidgets */,
+				4487A9D22EA4A8AB002D7485 /* WatchUVGuard Watch App */,
 				44BBFC552EA3DA2F003C6F2B /* Frameworks */,
 				44BD5DA32E5639CF002CA787 /* Products */,
 			);
@@ -117,6 +164,7 @@
 			children = (
 				44BD5DA22E5639CF002CA787 /* UVGuard.app */,
 				44BBFC542EA3DA2F003C6F2B /* UVGuardWidgetsExtension.appex */,
+				4487A9D12EA4A8AB002D7485 /* WatchUVGuard Watch App.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -124,6 +172,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		4487A9D02EA4A8AB002D7485 /* WatchUVGuard Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4487A9DF2EA4A8AD002D7485 /* Build configuration list for PBXNativeTarget "WatchUVGuard Watch App" */;
+			buildPhases = (
+				4487A9CD2EA4A8AB002D7485 /* Sources */,
+				4487A9CE2EA4A8AB002D7485 /* Frameworks */,
+				4487A9CF2EA4A8AB002D7485 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				4487A9D22EA4A8AB002D7485 /* WatchUVGuard Watch App */,
+			);
+			name = "WatchUVGuard Watch App";
+			packageProductDependencies = (
+			);
+			productName = "WatchUVGuard Watch App";
+			productReference = 4487A9D12EA4A8AB002D7485 /* WatchUVGuard Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
 		44BBFC532EA3DA2F003C6F2B /* UVGuardWidgetsExtension */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 44BBFC692EA3DA31003C6F2B /* Build configuration list for PBXNativeTarget "UVGuardWidgetsExtension" */;
@@ -154,11 +224,13 @@
 				44BD5D9F2E5639CF002CA787 /* Frameworks */,
 				44BD5DA02E5639CF002CA787 /* Resources */,
 				44BBFC652EA3DA31003C6F2B /* Embed Foundation Extensions */,
+				4487A9DC2EA4A8AD002D7485 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				44BBFC632EA3DA31003C6F2B /* PBXTargetDependency */,
+				4487A9DA2EA4A8AD002D7485 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				44BD5DA42E5639CF002CA787 /* UVGuard */,
@@ -181,6 +253,9 @@
 				LastSwiftUpdateCheck = 2600;
 				LastUpgradeCheck = 1640;
 				TargetAttributes = {
+					4487A9D02EA4A8AB002D7485 = {
+						CreatedOnToolsVersion = 26.0.1;
+					};
 					44BBFC532EA3DA2F003C6F2B = {
 						CreatedOnToolsVersion = 26.0.1;
 					};
@@ -210,11 +285,19 @@
 			targets = (
 				44BD5DA12E5639CF002CA787 /* UVGuard */,
 				44BBFC532EA3DA2F003C6F2B /* UVGuardWidgetsExtension */,
+				4487A9D02EA4A8AB002D7485 /* WatchUVGuard Watch App */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		4487A9CF2EA4A8AB002D7485 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		44BBFC522EA3DA2F003C6F2B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -232,6 +315,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		4487A9CD2EA4A8AB002D7485 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		44BBFC502EA3DA2F003C6F2B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -249,6 +339,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		4487A9DA2EA4A8AD002D7485 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4487A9D02EA4A8AB002D7485 /* WatchUVGuard Watch App */;
+			targetProxy = 4487A9D92EA4A8AD002D7485 /* PBXContainerItemProxy */;
+		};
 		44BBFC632EA3DA31003C6F2B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 44BBFC532EA3DA2F003C6F2B /* UVGuardWidgetsExtension */;
@@ -257,6 +352,72 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		4487A9DD2EA4A8AD002D7485 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 24P579BG6U;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = WatchUVGuard;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = swanhtetaung.UVGuard;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = swanhtetaung.UVGuard.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+		4487A9DE2EA4A8AD002D7485 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 24P579BG6U;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = WatchUVGuard;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = swanhtetaung.UVGuard;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = swanhtetaung.UVGuard.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
 		44BBFC662EA3DA31003C6F2B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -507,6 +668,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		4487A9DF2EA4A8AD002D7485 /* Build configuration list for PBXNativeTarget "WatchUVGuard Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4487A9DD2EA4A8AD002D7485 /* Debug */,
+				4487A9DE2EA4A8AD002D7485 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		44BBFC692EA3DA31003C6F2B /* Build configuration list for PBXNativeTarget "UVGuardWidgetsExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
