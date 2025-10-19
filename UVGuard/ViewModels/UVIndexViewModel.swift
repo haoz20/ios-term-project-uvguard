@@ -7,6 +7,8 @@
 
 import Foundation
 import Alamofire
+import WidgetKit
+import CoreLocation
 
 @Observable
 class UVIndexViewModel {
@@ -83,8 +85,68 @@ class UVIndexViewModel {
         
         findCurrentUV(from: response)
         
+        // Update widget data
+        updateWidgetData()
+        
         // Schedule notifications if enabled
         scheduleNotificationsIfNeeded()
+    }
+    
+    // MARK: - Widget Update
+    
+    private func updateWidgetData() {
+        // Save current UV for widget
+        if let currentUV = currentUV {
+            SharedDataManager.shared.saveCurrentUV(currentUV)
+        }
+        
+        // Save hourly forecast (first 4 hours)
+        let widgetForecast = prepareWidgetForecast()
+        SharedDataManager.shared.saveHourlyForecast(widgetForecast)
+        
+        // Save last update time
+        SharedDataManager.shared.saveLastUpdate(Date())
+        
+        // Reload all widget timelines
+        WidgetCenter.shared.reloadAllTimelines()
+    }
+    
+    private func prepareWidgetForecast() -> [(hour: String, uv: Double)] {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
+        dateFormatter.timeZone = TimeZone(identifier: timezone) ?? TimeZone.current
+        
+        let hourFormatter = DateFormatter()
+        hourFormatter.dateFormat = "ha" // e.g., "12PM", "1PM"
+        hourFormatter.timeZone = TimeZone(identifier: timezone) ?? TimeZone.current
+        
+        // Get current time in the location's timezone
+        let now = Date()
+        
+        // Find current hour index and take next 4 hours
+        var forecast: [(hour: String, uv: Double)] = []
+        
+        for (index, timeString) in hourlyForecast.enumerated() {
+            guard let date = dateFormatter.date(from: timeString.time) else { continue }
+            
+            // If this time is now or in the future
+            if date >= now && forecast.count < 4 {
+                let hourString = hourFormatter.string(from: date)
+                forecast.append((hourString, timeString.uv))
+            }
+        }
+        
+        // If we don't have 4 hours, fill with remaining data
+        if forecast.isEmpty && hourlyForecast.count >= 4 {
+            for i in 0..<min(4, hourlyForecast.count) {
+                if let date = dateFormatter.date(from: hourlyForecast[i].time) {
+                    let hourString = hourFormatter.string(from: date)
+                    forecast.append((hourString, hourlyForecast[i].uv))
+                }
+            }
+        }
+        
+        return forecast
     }
     
     // MARK: - Notification Scheduling

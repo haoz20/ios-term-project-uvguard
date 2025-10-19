@@ -9,9 +9,19 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>UVGuardWidgetsExtension.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>4</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>44BBFC532EA3DA2F003C6F2B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>44BD5DA12E5639CF002CA787</key>
 		<dict>
 			<key>primary</key>
