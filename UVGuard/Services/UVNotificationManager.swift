@@ -265,14 +265,14 @@ class UVNotificationManager {
 
 // MARK: - UVLevel Extension
 
-extension UVLevel {
-    var description: String {
-        switch self {
-        case .low: return "Low"
-        case .moderate: return "Moderate"
-        case .high: return "High"
-        case .veryHigh: return "Very High"
-        case .extreme: return "Extreme"
-        }
-    }
-}
+//extension UVLevel {
+//    var description: String {
+//        switch self {
+//        case .low: return "Low"
+//        case .moderate: return "Moderate"
+//        case .high: return "High"
+//        case .veryHigh: return "Very High"
+//        case .extreme: return "Extreme"
+//        }
+//    }
+//}
